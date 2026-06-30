@@ -74,7 +74,7 @@ export function PostOJT() {
         <p className="text-slate-500 text-xs max-w-sm leading-relaxed mt-1">
           This module is disabled until:
         </p>
-        <div className="bg-slate-55 p-3 rounded border border-slate-100 text-left text-xs text-slate-600 space-y-1 bg-slate-50">
+        <div className="bg-slate-50 p-3 rounded border border-slate-100 text-left text-xs text-slate-600 space-y-1">
           <p className="flex items-center gap-1.5 font-medium">
             <span className={`h-2 w-2 rounded-full ${hoursCompleted ? 'bg-green-500' : 'bg-red-500 animate-pulse'}`}></span>
             Required Hours Rendered: {student.totalHoursRendered.toFixed(0)} / {student.requiredHours} hrs {hoursCompleted ? '(Cleared)' : '(Pending)'}
@@ -290,7 +290,7 @@ export function PostOJT() {
 
       if (isImage) {
         return (
-          <div className="flex flex-col items-center justify-center bg-slate-55 border border-slate-200 rounded-lg p-4 min-h-[380px] bg-slate-50">
+          <div className="flex flex-col items-center justify-center bg-slate-50 border border-slate-200 rounded-lg p-4 min-h-[380px]">
             <img 
               src={url} 
               alt={reqName} 
@@ -301,7 +301,7 @@ export function PostOJT() {
         );
       } else if (isPdf) {
         return (
-          <div className="bg-slate-55 border border-slate-200 rounded-lg p-1 min-h-[380px] bg-slate-50">
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-1 min-h-[380px]">
             <iframe 
               src={url} 
               title={reqName} 
@@ -312,7 +312,7 @@ export function PostOJT() {
         );
       } else {
         return (
-          <div className="flex flex-col items-center justify-center bg-slate-55 border border-slate-200 rounded-lg p-8 min-h-[380px] text-center bg-slate-50">
+          <div className="flex flex-col items-center justify-center bg-slate-50 border border-slate-200 rounded-lg p-8 min-h-[380px] text-center">
             <FileText className="h-16 w-16 text-[#800000] mb-4 animate-bounce" />
             <h4 className="font-bold text-slate-800 text-sm uppercase">{reqName}</h4>
             <p className="text-slate-500 text-xs mt-1.5 max-w-sm leading-relaxed mx-auto">

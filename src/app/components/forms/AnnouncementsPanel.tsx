@@ -2,7 +2,7 @@ import React from 'react';
 import { Badge } from '../ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Megaphone, Pin } from 'lucide-react';
-import { formsAnnouncements } from '../../data/mockData';
+import { formsAnnouncements } from '../../data/referenceData';
 
 const priorityClass: Record<string, string> = {
   Normal: 'bg-slate-100 text-slate-700 hover:bg-slate-100',

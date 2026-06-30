@@ -1,11 +1,12 @@
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { Login } from './pages/auth/Login';
-import { Register } from './pages/auth/Register';
 import { LandingPage } from './pages/LandingPage';
-import { RegisterSelection } from './pages/auth/RegisterSelection';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { EmailVerifiedSuccess, VerificationExpired, VerifyEmail } from './pages/auth/EmailVerification';
+import { OtpVerification } from './pages/auth/OtpVerification';
+import { PasswordDecision } from './pages/auth/PasswordDecision';
+import { ChangePassword } from './pages/auth/ChangePassword';
 import { Layout } from './components/Layout';
 
 // Student Portal Pages
@@ -26,11 +27,9 @@ import { FormsTemplates } from './pages/student/FormsTemplates';
 import { AdviserDashboard } from './pages/adviser/AdviserDashboard';
 import { StudentMonitoring } from './pages/adviser/StudentMonitoring';
 import { AttendanceMonitoring } from './pages/adviser/AttendanceMonitoring';
-import { TaskReview } from './pages/adviser/TaskReview';
+import { AdviserFormsTemplates } from './pages/adviser/FormsTemplates';
 import { JournalReview } from './pages/adviser/JournalReview';
-import { DuringOJTReview } from './pages/adviser/DuringOJTReview';
-import { PostOJTReview } from './pages/adviser/PostOJTReview';
-import { Evaluation } from './pages/adviser/Evaluation';
+import { RequirementReviews } from './pages/adviser/RequirementReviews';
 import { PortfolioReview } from './pages/adviser/PortfolioReview';
 
 // Coordinator Portal Pages
@@ -38,10 +37,8 @@ import { CoordinatorDashboard } from './pages/coordinator/CoordinatorDashboard';
 import { StudentManagement } from './pages/coordinator/StudentManagement';
 import { AdviserManagement } from './pages/coordinator/AdviserManagement';
 import { CompanyManagement } from './pages/coordinator/CompanyManagement';
-import { PreOJTReview } from './pages/coordinator/PreOJTReview';
 import { MOAManagement } from './pages/coordinator/MOAManagement';
 import { TemplateManagement } from './pages/coordinator/TemplateManagement';
-import { EvaluationFormManagement } from './pages/coordinator/EvaluationFormManagement';
 import { OJTDatabase } from './pages/coordinator/OJTDatabase';
 import { PortfolioManagement } from './pages/coordinator/PortfolioManagement';
 import { Announcements } from './pages/coordinator/Announcements';
@@ -105,20 +102,20 @@ export const router = createBrowserRouter([
     Component: Login,
   },
   {
-    path: '/register',
-    Component: RegisterSelection,
-  },
-  {
-    path: '/register/student',
-    element: <Register roleOverride="student" />,
-  },
-  {
-    path: '/register/adviser',
-    element: <Register roleOverride="adviser" />,
-  },
-  {
     path: '/forgot-password',
     Component: ForgotPassword,
+  },
+  {
+    path: '/verify-otp',
+    Component: OtpVerification,
+  },
+  {
+    path: '/password-decision',
+    Component: PasswordDecision,
+  },
+  {
+    path: '/change-password',
+    Component: ChangePassword,
   },
   {
     path: '/verify-email',
@@ -197,24 +194,28 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute><AttendanceMonitoring /></ProtectedRoute>
   },
   {
-    path: '/adviser/tasks',
-    element: <ProtectedRoute><TaskReview /></ProtectedRoute>
+    path: '/adviser/forms-templates',
+    element: <ProtectedRoute><AdviserFormsTemplates /></ProtectedRoute>
   },
   {
     path: '/adviser/journals',
     element: <ProtectedRoute><JournalReview /></ProtectedRoute>
   },
   {
+    path: '/adviser/review-requirements',
+    element: <ProtectedRoute><RequirementReviews /></ProtectedRoute>
+  },
+  {
+    path: '/adviser/pre-ojt',
+    element: <Navigate to="/adviser/review-requirements?stage=pre" replace />
+  },
+  {
     path: '/adviser/during-ojt',
-    element: <ProtectedRoute><DuringOJTReview /></ProtectedRoute>
+    element: <Navigate to="/adviser/review-requirements?stage=during" replace />
   },
   {
     path: '/adviser/post-ojt',
-    element: <ProtectedRoute><PostOJTReview /></ProtectedRoute>
-  },
-  {
-    path: '/adviser/evaluation',
-    element: <ProtectedRoute><Evaluation /></ProtectedRoute>
+    element: <Navigate to="/adviser/review-requirements?stage=post" replace />
   },
   {
     path: '/adviser/portfolio',
@@ -235,20 +236,12 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute><CompanyManagement /></ProtectedRoute>
   },
   {
-    path: '/coordinator/pre-ojt',
-    element: <ProtectedRoute><PreOJTReview /></ProtectedRoute>
-  },
-  {
     path: '/coordinator/moas',
     element: <ProtectedRoute><MOAManagement /></ProtectedRoute>
   },
   {
     path: '/coordinator/templates',
     element: <ProtectedRoute><TemplateManagement /></ProtectedRoute>
-  },
-  {
-    path: '/coordinator/evaluation-forms',
-    element: <ProtectedRoute><EvaluationFormManagement /></ProtectedRoute>
   },
   {
     path: '/coordinator/database',

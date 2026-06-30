@@ -135,6 +135,9 @@
   --color-pup-maroon: #800000;
   --color-pup-gold: #D4AF37;
   --color-pup-gold-hover: #b89327;
+
+  --color-slate-650: #4e5d71;
+  --color-slate-655: #475569;
 }
 
 @layer base {

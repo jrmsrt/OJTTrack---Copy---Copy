@@ -32,7 +32,7 @@ export function StudentDashboard() {
     return (
       <div className="p-6 text-center">
         <h2 className="text-xl font-bold text-red-600">Error</h2>
-        <p className="text-slate-600 mt-2">Student record not found. Try logging out and logging in as a demo user.</p>
+        <p className="text-slate-600 mt-2">Student record not found. Please contact the OJT Coordinator.</p>
       </div>
     );
   }
@@ -56,7 +56,7 @@ export function StudentDashboard() {
   };
 
   const handleClockOut = () => {
-    const result = timeOut(student.studentId);
+    const result = timeOut(student.studentId, { lat: mockLocation.lat, lng: mockLocation.lng });
     if (result.success) {
       toast.success(result.message);
     } else {
@@ -249,41 +249,80 @@ export function StudentDashboard() {
             <div className="border-t border-slate-100 pt-4">
               <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Quick Navigation Shortcuts</h4>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <Button 
-                  variant="outline" 
-                  disabled={!isCleared}
-                  onClick={() => navigate('/tasks')} 
-                  className="text-xs h-10 border-slate-200 text-slate-700 flex items-center gap-1.5"
-                >
-                  <FileText className="h-4 w-4" />
-                  Submit Daily Task
-                </Button>
-                <Button 
-                  variant="outline" 
-                  disabled={!isCleared}
-                  onClick={() => navigate('/weekly-journal')} 
-                  className="text-xs h-10 border-slate-200 text-slate-700 flex items-center gap-1.5"
-                >
-                  <BookOpen className="h-4 w-4" />
-                  View Weekly Journal
-                </Button>
-                <Button 
-                  variant="outline" 
-                  disabled={!isCleared}
-                  onClick={() => navigate('/portfolio')} 
-                  className="text-xs h-10 border-slate-200 text-slate-700 flex items-center gap-1.5"
-                >
-                  <Award className="h-4 w-4" />
-                  Portfolio Status
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate('/messages')} 
-                  className="text-xs h-10 border-slate-200 text-slate-700 flex items-center gap-1.5"
-                >
-                  <MessageSquare className="h-4 w-4" />
-                  Check Messages
-                </Button>
+                {[
+                  {
+                    title: "Submit Daily Task",
+                    description: "Log daily activities & hours",
+                    path: "/tasks",
+                    icon: FileText,
+                    iconColor: "text-indigo-600 dark:text-indigo-400",
+                    iconBg: "bg-indigo-50 dark:bg-indigo-950/40",
+                    hoverBorder: "hover:border-indigo-200 dark:hover:border-indigo-900/50",
+                    hoverBg: "hover:bg-indigo-50/10 dark:hover:bg-indigo-950/10",
+                    requiresClearance: true,
+                  },
+                  {
+                    title: "Weekly Journal",
+                    description: "Write & submit weekly logs",
+                    path: "/weekly-journal",
+                    icon: BookOpen,
+                    iconColor: "text-amber-600 dark:text-amber-400",
+                    iconBg: "bg-amber-50 dark:bg-amber-950/40",
+                    hoverBorder: "hover:border-amber-200 dark:hover:border-amber-900/50",
+                    hoverBg: "hover:bg-amber-50/10 dark:hover:bg-amber-950/10",
+                    requiresClearance: true,
+                  },
+                  {
+                    title: "Portfolio Status",
+                    description: "Check endorsement & files",
+                    path: "/portfolio",
+                    icon: Award,
+                    iconColor: "text-emerald-600 dark:text-emerald-400",
+                    iconBg: "bg-emerald-50 dark:bg-emerald-950/40",
+                    hoverBorder: "hover:border-emerald-200 dark:hover:border-emerald-900/50",
+                    hoverBg: "hover:bg-emerald-50/10 dark:hover:bg-emerald-950/10",
+                    requiresClearance: true,
+                  },
+                  {
+                    title: "Check Messages",
+                    description: "Inbox & chat communications",
+                    path: "/messages",
+                    icon: MessageSquare,
+                    iconColor: "text-blue-600 dark:text-blue-400",
+                    iconBg: "bg-blue-50 dark:bg-blue-950/40",
+                    hoverBorder: "hover:border-blue-200 dark:hover:border-blue-900/50",
+                    hoverBg: "hover:bg-blue-50/10 dark:hover:bg-blue-950/10",
+                    requiresClearance: false,
+                  }
+                ].map((link, idx) => {
+                  const Icon = link.icon;
+                  const isDisabled = link.requiresClearance && !isCleared;
+                  return (
+                    <button
+                      key={idx}
+                      disabled={isDisabled}
+                      onClick={() => navigate(link.path)}
+                      className={`w-full text-left p-3 rounded-xl border border-slate-100 bg-white transition-all duration-200 flex flex-col justify-between group cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:shadow-md disabled:opacity-45 disabled:cursor-not-allowed ${isDisabled ? "" : `${link.hoverBorder} ${link.hoverBg}`}`}
+                    >
+                      <div className="flex items-center justify-between w-full mb-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${link.iconBg} shrink-0 transition-transform duration-200 ${isDisabled ? "" : "group-hover:scale-105"}`}>
+                          <Icon className={`h-4 w-4 ${link.iconColor}`} />
+                        </div>
+                        {!isDisabled && (
+                          <ArrowRight className="h-3.5 w-3.5 text-slate-350 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all shrink-0" />
+                        )}
+                      </div>
+                      <div className="min-w-0 w-full">
+                        <span className={`text-[11px] font-semibold text-slate-700 transition-colors block truncate ${isDisabled ? "" : "group-hover:text-slate-900"}`}>
+                          {link.title}
+                        </span>
+                        <span className="text-[9px] text-slate-400 mt-0.5 block truncate font-normal leading-normal">
+                          {link.description}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </CardContent>

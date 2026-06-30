@@ -14,7 +14,7 @@ import {
 } from '../../components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { Search, Eye, Clock, CheckSquare, TrendingUp } from 'lucide-react';
-import { supervisorInterns, attendanceHistory, studentTasks, progressReports } from '../../data/mockData';
+import { supervisorInterns, attendanceHistory, studentTasks, progressReports } from '../../data/referenceData';
 
 export function Interns() {
   const [searchTerm, setSearchTerm] = useState('');

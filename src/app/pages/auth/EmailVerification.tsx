@@ -33,7 +33,7 @@ function VerificationEmailPreview({ email }: { email: string }) {
       </CardHeader>
       <CardContent>
         <div className="rounded-lg border border-slate-200 bg-white p-5">
-          <p className="text-xs font-medium text-slate-500">Subject: Verify Your OJT Monitoring System Account</p>
+          <p className="text-xs font-medium text-slate-500">Subject: Verify Your InTrack - OJT Monitoring System Account</p>
           <div className="mt-4 rounded-lg bg-slate-50 p-4">
             <div className="flex items-center gap-2">
               <img 
@@ -41,9 +41,9 @@ function VerificationEmailPreview({ email }: { email: string }) {
                 alt="PUP Logo" 
                 className="h-8 w-8 object-contain"
               />
-              <span className="font-semibold text-slate-900">OJT Monitoring System</span>
+              <span className="font-semibold text-slate-900">InTrack - OJT Monitoring System</span>
             </div>
-            <h3 className="text-lg font-semibold text-slate-900 mt-5">Welcome to the OJT Monitoring System</h3>
+            <h3 className="text-lg font-semibold text-slate-900 mt-5">Welcome to InTrack - OJT Monitoring System</h3>
             <p className="text-sm text-slate-600 mt-2">
               Thank you for registering. Please verify your email address to activate your account.
             </p>
@@ -147,7 +147,7 @@ export function EmailVerifiedSuccess() {
           </div>
           <h1 className="text-3xl font-semibold text-slate-900 mt-6">Email Successfully Verified</h1>
           <p className="text-slate-600 mt-3">
-            Your account has been successfully activated. You may now log in to the OJT Monitoring System.
+            Your account has been successfully activated. You may now log in to InTrack - OJT Monitoring System.
           </p>
           <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Button onClick={() => navigate('/login')} className="bg-[#800000] hover:bg-[#6b0000] text-white">

@@ -6,6 +6,7 @@ import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { toast } from 'sonner';
+import { RequirementFilePreviewDialog, RequirementFilePreview } from '../../components/forms/RequirementFilePreviewDialog';
 import {
   Table,
   TableBody,
@@ -17,7 +18,6 @@ import {
 import { 
   Check, 
   X, 
-  Search, 
   FileText, 
   AlertTriangle,
   CheckCircle2,
@@ -33,22 +33,41 @@ import {
   DialogTitle,
 } from '../../components/ui/dialog';
 
-export function DuringOJTReview() {
+interface RequirementReviewFilters {
+  embedded?: boolean;
+  searchTerm?: string;
+  programFilter?: string;
+  sectionFilter?: string;
+}
+
+function getComparableSection(section: string) {
+  const normalizedSection = section.trim().toUpperCase();
+  const legacyMatch = normalizedSection.match(/\b([34])([AB])$/);
+
+  if (legacyMatch) {
+    return `${legacyMatch[1]}-${legacyMatch[2] === 'A' ? '1' : '2'}`;
+  }
+
+  return section.trim();
+}
+
+export function DuringOJTReview({ embedded = false, searchTerm = '', programFilter = 'all', sectionFilter = 'all' }: RequirementReviewFilters) {
   const { students, reviewDuringOJTReq } = useOJT();
   
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedReq, setSelectedReq] = useState<{ studentId: string; studentName: string; reqName: string; fileName: string; status: string; remarks: string } | null>(null);
+  const [previewReq, setPreviewReq] = useState<RequirementFilePreview | null>(null);
   const [remarks, setRemarks] = useState('');
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
 
   // Flatten submitted During-OJT requirements across students
   const submittedReqs = students.flatMap(s => 
     s.duringOJTRequirements
-      .filter(r => r.status === 'Submitted' || r.status === 'Under Review')
+      .filter(r => r.status === 'Submitted' || r.status === 'Under Review' || r.status === 'Needs Revision' || r.status === 'Approved')
       .map(r => ({
         studentId: s.studentId,
         studentName: s.name,
         studentNumber: s.studentNumber,
+        program: s.program,
         section: s.section,
         reqName: r.name,
         fileName: r.fileName || '',
@@ -59,7 +78,11 @@ export function DuringOJTReview() {
 
   const filteredReqs = submittedReqs.filter(r => 
     r.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.reqName.toLowerCase().includes(searchTerm.toLowerCase())
+    r.reqName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.studentNumber.includes(searchTerm)
+  ).filter(r =>
+    (programFilter === 'all' || r.program.includes(programFilter)) &&
+    (sectionFilter === 'all' || getComparableSection(r.section) === sectionFilter)
   );
 
   const handleReviewAction = (status: 'Approved' | 'Needs Revision') => {
@@ -75,64 +98,71 @@ export function DuringOJTReview() {
 
   return (
     <div className="space-y-6 font-sans">
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">During-OJT Requirement Review</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Approve or reject internship records submitted by students during deployment.</p>
+      {!embedded && (
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">During-OJT Requirement Review</h1>
+            <p className="text-slate-500 text-sm mt-0.5">Approve or reject internship records submitted by students during deployment.</p>
+          </div>
         </div>
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            type="search"
-            placeholder="Search by intern name..."
-            className="pl-10 text-xs bg-slate-50 border-slate-200 focus-visible:ring-[#800000]"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
+      )}
 
-      <Card className="shadow-sm border-slate-200">
-        <CardHeader>
+      <Card className="shadow-sm border-slate-200 rounded-xl overflow-hidden">
+        <CardHeader className="border-b border-slate-100 bg-white px-5 py-4">
           <CardTitle className="text-base font-bold text-slate-800">Pending Deliverables Queue</CardTitle>
           <CardDescription>Track time records, midterm documents, supervisor checks, and report uploads.</CardDescription>
         </CardHeader>
         <CardContent className="p-0 overflow-x-auto">
           {filteredReqs.length === 0 ? (
-            <div className="p-8 text-center text-slate-400 text-sm">
-              All During-OJT reviews are cleared. No items pending.
+            <div className="p-10 text-center">
+              <FileText className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+              <p className="font-semibold text-slate-700 text-sm">No During-OJT files need review</p>
+              <p className="text-slate-400 text-xs mt-1">All During-OJT deliverables are cleared.</p>
             </div>
           ) : (
-            <Table>
+            <Table className="min-w-[960px] table-fixed">
               <TableHeader>
-                <TableRow className="bg-slate-50/50">
-                  <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Intern Details</TableHead>
-                  <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Requirement Name</TableHead>
-                  <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Uploaded Document</TableHead>
-                  <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Status</TableHead>
-                  <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase text-center w-28">Action</TableHead>
+                <TableRow className="bg-slate-50 border-b border-slate-200">
+                  <TableHead className="py-3.5 px-5 font-bold text-[11px] text-slate-500 uppercase w-[230px]">Intern</TableHead>
+                  <TableHead className="py-3.5 px-5 font-bold text-[11px] text-slate-500 uppercase w-[210px]">Requirement</TableHead>
+                  <TableHead className="py-3.5 px-5 font-bold text-[11px] text-slate-500 uppercase w-[240px]">Uploaded File</TableHead>
+                  <TableHead className="py-3.5 px-5 font-bold text-[11px] text-slate-500 uppercase w-[150px]">Status</TableHead>
+                  <TableHead className="py-3.5 px-5 font-bold text-[11px] text-slate-500 uppercase text-right w-[130px]">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredReqs.map((r, i) => (
-                  <TableRow key={i} className="hover:bg-slate-50/50 transition-colors">
-                    <TableCell className="py-3.5 px-4">
+                  <TableRow key={i} className="hover:bg-red-50/30 transition-colors border-b border-slate-100">
+                    <TableCell className="py-4 px-5 align-top whitespace-normal">
                       <span className="font-bold text-slate-800 text-xs block">{r.studentName}</span>
                       <span className="text-[10px] text-slate-400 font-semibold">{r.studentNumber} | {r.section}</span>
                     </TableCell>
-                    <TableCell className="py-3.5 px-4 font-semibold text-xs text-slate-805">
+                    <TableCell className="py-4 px-5 align-top font-semibold text-xs text-slate-700 whitespace-normal">
                       {r.reqName}
                     </TableCell>
-                    <TableCell className="py-3.5 px-4 text-xs">
-                      <div className="flex items-center gap-1.5 text-slate-600 font-medium">
-                        <FileText className="h-4 w-4 text-[#800000] shrink-0" />
-                        <span className="truncate max-w-[160px]" title={r.fileName}>{r.fileName}</span>
+                    <TableCell className="py-4 px-5 align-top text-xs whitespace-normal">
+                      <div className="flex items-start gap-2 text-slate-600">
+                        <FileText className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
+                        <button
+                          type="button"
+                          title="Click to preview file"
+                          onClick={() => setPreviewReq({ studentName: r.studentName, reqName: r.reqName, fileName: r.fileName, stage: 'During-OJT' })}
+                          className="text-xs font-semibold text-slate-600 whitespace-normal break-all text-left hover:text-[#800000] hover:underline cursor-pointer transition-colors"
+                        >
+                          {r.fileName}
+                        </button>
                       </div>
                     </TableCell>
-                    <TableCell className="py-3.5 px-4">
-                      <Badge className="bg-blue-100 text-blue-800 border-blue-200 flex items-center gap-1 w-24"><Clock className="h-3 w-3" /> Under Review</Badge>
+                    <TableCell className="py-4 px-5 align-top">
+                      {r.status === 'Needs Revision' ? (
+                        <Badge className="bg-amber-100 text-amber-800 border-amber-200 rounded-md">Revision Requested</Badge>
+                      ) : r.status === 'Approved' ? (
+                        <Badge className="bg-green-100 text-green-800 border-green-200 rounded-md">Approved</Badge>
+                      ) : (
+                        <Badge className="bg-blue-100 text-blue-800 border-blue-200 flex items-center gap-1 w-fit rounded-md"><Clock className="h-3 w-3" /> Under Review</Badge>
+                      )}
                     </TableCell>
-                    <TableCell className="py-3.5 px-4 text-center">
+                    <TableCell className="py-4 px-5 align-top text-right">
                       <Button
                         size="sm"
                         onClick={() => {
@@ -140,7 +170,7 @@ export function DuringOJTReview() {
                           setRemarks(r.remarks || '');
                           setReviewDialogOpen(true);
                         }}
-                        className="bg-[#800000] hover:bg-[#6b0000] text-white text-[10px] h-7 font-bold flex items-center gap-1.5 cursor-pointer"
+                        className="bg-[#800000] hover:bg-[#6b0000] text-white text-[10px] h-8 font-bold cursor-pointer rounded-md px-3"
                       >
                         Verify file
                       </Button>
@@ -169,14 +199,19 @@ export function DuringOJTReview() {
                 <div className="flex items-center gap-2">
                   <FileText className="h-5 w-5 text-[#800000]" />
                   <div>
-                    <p className="font-bold text-slate-800 text-[11px] truncate max-w-[180px]">{selectedReq.fileName}</p>
+                    <p className="font-bold text-slate-800 text-[9px] truncate max-w-[180px]">{selectedReq.fileName}</p>
                     <p className="text-[10px] text-slate-400 font-medium">Format: Verified PDF copy</p>
                   </div>
                 </div>
                 <Button 
                   size="sm" 
                   variant="outline"
-                  onClick={() => toast.success("Opening file preview...")}
+                  onClick={() => setPreviewReq({
+                    studentName: selectedReq.studentName,
+                    reqName: selectedReq.reqName,
+                    fileName: selectedReq.fileName,
+                    stage: 'During-OJT'
+                  })}
                   className="text-[10px] h-7 font-bold flex items-center gap-1 border-slate-205 cursor-pointer"
                 >
                   <ExternalLink className="h-3.5 w-3.5" /> View
@@ -194,17 +229,19 @@ export function DuringOJTReview() {
               </div>
             </div>
 
-            <DialogFooter className="gap-2 sm:gap-0">
+            <DialogFooter className="gap-2">
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => handleReviewAction('Needs Revision')}
-                className="text-xs border-amber-305 text-amber-800 hover:bg-amber-50 cursor-pointer"
+                className="border-amber-300 text-amber-800 hover:bg-amber-50 hover:text-amber-900 font-semibold cursor-pointer"
               >
                 <X className="h-3.5 w-3.5 mr-1" /> Request Revision
               </Button>
               <Button
+                size="sm"
                 onClick={() => handleReviewAction('Approved')}
-                className="bg-green-600 hover:bg-green-700 text-white text-xs font-bold cursor-pointer"
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold cursor-pointer"
               >
                 <Check className="h-3.5 w-3.5 mr-1" /> Approve Document
               </Button>
@@ -212,6 +249,13 @@ export function DuringOJTReview() {
           </DialogContent>
         </Dialog>
       )}
+
+      <RequirementFilePreviewDialog
+        preview={previewReq}
+        onOpenChange={(open) => {
+          if (!open) setPreviewReq(null);
+        }}
+      />
     </div>
   );
 }

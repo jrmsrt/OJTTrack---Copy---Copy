@@ -5,7 +5,7 @@ import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Users, CheckCircle, Clock, AlertTriangle, TrendingUp } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { supervisorInterns } from '../../data/mockData';
+import { supervisorInterns } from '../../data/referenceData';
 
 const attendanceTrendData = [
   { week: 'W1', attendance: 96 },

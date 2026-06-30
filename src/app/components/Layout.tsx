@@ -108,14 +108,12 @@ export function Layout({ children }: LayoutProps) {
     if (user?.role === 'adviser') {
       return [
         { path: '/dashboard', icon: LayoutDashboard, label: 'Adviser Dashboard' },
+        { path: '/adviser/forms-templates', icon: Files, label: 'Forms & Templates' },
+        { path: '/adviser/review-requirements', icon: ClipboardCheck, label: 'Review Requirements' },
         { path: '/adviser/students', icon: Users, label: 'Student Monitoring' },
         { path: '/adviser/attendance', icon: ClipboardCheck, label: 'Attendance Monitoring' },
-        { path: '/adviser/tasks', icon: CheckSquare, label: 'Daily Task Review' },
         { path: '/adviser/journals', icon: FileText, label: 'Weekly Journal Review' },
-        { path: '/adviser/during-ojt', icon: Files, label: 'During-OJT Reviews' },
-        { path: '/adviser/post-ojt', icon: ClipboardCheck, label: 'Post-OJT Reviews' },
-        { path: '/adviser/evaluation', icon: Award, label: 'Evaluations (Grading)' },
-        { path: '/adviser/portfolio', icon: Files, label: 'Portfolio Reviews' },
+        { path: '/adviser/portfolio', icon: Files, label: 'Portfolio Completion Review' },
         { path: '/messages', icon: MessageSquare, label: 'Messages' },
         { path: '/settings', icon: Settings, label: 'Settings' },
       ];
@@ -127,10 +125,8 @@ export function Layout({ children }: LayoutProps) {
         { path: '/coordinator/students', icon: GraduationCap, label: 'Student Management' },
         { path: '/coordinator/advisers', icon: Users, label: 'Adviser Management' },
         { path: '/coordinator/companies', icon: Building, label: 'Company Deployment' },
-        { path: '/coordinator/pre-ojt', icon: ClipboardCheck, label: 'Pre-OJT Document Review' },
         { path: '/coordinator/moas', icon: FileText, label: 'MOA Management' },
         { path: '/coordinator/templates', icon: Files, label: 'Template Management' },
-        { path: '/coordinator/evaluation-forms', icon: Award, label: 'Evaluation Form Builder' },
         { path: '/coordinator/database', icon: FileText, label: 'OJT Database & Export' },
         { path: '/coordinator/portfolios', icon: Files, label: 'Portfolio Review Board' },
         { path: '/coordinator/announcements', icon: Bell, label: 'Announcements Editor' },
@@ -156,16 +152,26 @@ export function Layout({ children }: LayoutProps) {
 
   // Demo shortcut login helper
   const handleDemoLogin = (role: 'student' | 'adviser' | 'coordinator') => {
+    let result;
     if (role === 'student') {
-      login('sarah.johnson@university.edu', '', 'student');
+      result = login('jairarmasarate@iskolarngbayan.pup.edu.ph', 'PUPrs@1904', 'student');
     } else if (role === 'adviser') {
-      login('michael.chen@techcorp.com', '', 'adviser');
+      result = login('michael.chen@techcorp.com', 'PUPrs@1904', 'adviser');
     } else {
-      login('emily.rodriguez@university.edu', '', 'coordinator');
+      result = login('admin@pup.edu.ph', 'RSadmin@1904', 'coordinator');
     }
-    toast.success(`Logged in as ${role === 'student' ? 'Sarah (Student)' : role === 'adviser' ? 'Michael (Adviser)' : 'Emily (Coordinator)'}`);
-    navigate('/dashboard');
-    setSimPanelOpen(false);
+
+    if (result.success) {
+      toast.success(`Logged in as ${role === 'student' ? 'Jaira (Student)' : role === 'adviser' ? 'Michael (Adviser)' : 'Admin (Coordinator)'}`);
+      navigate('/dashboard');
+      setSimPanelOpen(false);
+    } else if (result.requiresOtp) {
+      toast.info("Account activation OTP required. Redirecting to verification page...");
+      navigate('/verify-otp');
+      setSimPanelOpen(false);
+    } else {
+      toast.error(result.error || "Login failed");
+    }
   };
 
   // Stage simulation helper
@@ -212,7 +218,7 @@ export function Layout({ children }: LayoutProps) {
                 className="h-8 w-8 object-contain"
               />
               <span className="font-semibold text-lg hidden sm:inline text-[#800000] tracking-tight">
-                PUP OJT Portal
+                InTrack
               </span>
             </Link>
           </div>
@@ -461,21 +467,21 @@ export function Layout({ children }: LayoutProps) {
                   variant={user?.role === 'student' ? 'default' : 'outline'}
                   className={`text-[10px] font-bold h-8 px-1 truncate ${user?.role === 'student' ? 'bg-[#800000]' : ''}`}
                 >
-                  Intern (Sarah)
+                  Intern (Jaira)
                 </Button>
                 <Button
                   onClick={() => handleDemoLogin('adviser')}
                   variant={user?.role === 'adviser' ? 'default' : 'outline'}
                   className={`text-[10px] font-bold h-8 px-1 truncate ${user?.role === 'adviser' ? 'bg-slate-900' : ''}`}
                 >
-                  Adviser (Mich)
+                  Adviser (Chen)
                 </Button>
                 <Button
                   onClick={() => handleDemoLogin('coordinator')}
                   variant={user?.role === 'coordinator' ? 'default' : 'outline'}
                   className={`text-[10px] font-bold h-8 px-1 truncate ${user?.role === 'coordinator' ? 'bg-teal-700 hover:bg-teal-800' : ''}`}
                 >
-                  Coord (Emily)
+                  Coordinator
                 </Button>
               </div>
             </div>

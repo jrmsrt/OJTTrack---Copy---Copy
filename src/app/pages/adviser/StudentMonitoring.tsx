@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../..
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
+import { RequirementFilePreviewDialog, RequirementFilePreview } from '../../components/forms/RequirementFilePreviewDialog';
 import {
   Table,
   TableBody,
@@ -29,6 +30,30 @@ import {
   DialogTitle,
 } from '../../components/ui/dialog';
 
+function formatLastFirstMI(fullName: string): string {
+  if (!fullName) return '';
+  if (fullName.includes(',')) return fullName;
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length <= 1) return fullName;
+  
+  const lastName = parts[parts.length - 1];
+  const secondToLast = parts[parts.length - 2];
+  if (secondToLast.endsWith('.') || (secondToLast.length === 1 && /[A-Z]/i.test(secondToLast))) {
+    const mi = secondToLast.endsWith('.') ? secondToLast : `${secondToLast}.`;
+    const firstName = parts.slice(0, parts.length - 2).join(' ');
+    return `${lastName}, ${firstName} ${mi}`;
+  }
+  
+  if (parts.length === 2) {
+    return `${lastName}, ${parts[0]}`;
+  }
+  
+  const middleName = parts[parts.length - 2];
+  const firstName = parts.slice(0, parts.length - 2).join(' ');
+  const middleInitial = middleName.charAt(0).toUpperCase();
+  return `${lastName}, ${firstName} ${middleInitial}.`;
+}
+
 export function StudentMonitoring() {
   const { students } = useOJT();
   
@@ -37,12 +62,24 @@ export function StudentMonitoring() {
   const [programFilter, setProgramFilter] = useState('all');
   
   const [selectedStudent, setSelectedStudent] = useState<StudentOJTProfile | null>(null);
+  const [previewReq, setPreviewReq] = useState<RequirementFilePreview | null>(null);
+
+  const getComparableSection = (section: string) => {
+    const normalizedSection = section.trim().toUpperCase();
+    const legacyMatch = normalizedSection.match(/\b([34])([AB])$/);
+
+    if (legacyMatch) {
+      return `${legacyMatch[1]}-${legacyMatch[2] === 'A' ? '1' : '2'}`;
+    }
+
+    return section.trim();
+  };
 
   // Filter logic
   const filteredStudents = students.filter(s => {
     const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           s.studentNumber.includes(searchTerm);
-    const matchesSection = sectionFilter === 'all' || s.section === sectionFilter;
+    const matchesSection = sectionFilter === 'all' || getComparableSection(s.section) === sectionFilter;
     const matchesProgram = programFilter === 'all' || s.program.includes(programFilter);
     return matchesSearch && matchesSection && matchesProgram;
   });
@@ -68,6 +105,35 @@ export function StudentMonitoring() {
     if (stage.includes('Stage 3')) return <Badge className="bg-indigo-600 text-white">Post-OJT</Badge>;
     return <Badge className="bg-green-600 text-white">Completed</Badge>;
   };
+
+  const renderRequirementTile = (
+    requirement: { name: string; status: string; fileName: string | null },
+    student: StudentOJTProfile,
+    stage: RequirementFilePreview['stage']
+  ) => (
+    <div className="flex justify-between items-start gap-3 p-2 bg-slate-50 rounded border">
+      <div className="min-w-0">
+        <span className="font-medium text-slate-700 truncate max-w-[180px] block">{requirement.name}</span>
+        {requirement.fileName && (
+          <button
+            type="button"
+            title="Click to preview file"
+            onClick={() => setPreviewReq({
+              studentName: student.name,
+              reqName: requirement.name,
+              fileName: requirement.fileName || '',
+              stage
+            })}
+            className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-[#800000] hover:underline underline-offset-2 max-w-[190px] cursor-pointer"
+          >
+            <FileText className="h-3 w-3 shrink-0" />
+            <span className="truncate">{requirement.fileName}</span>
+          </button>
+        )}
+      </div>
+      <div className="shrink-0">{getStatusBadge(requirement.status)}</div>
+    </div>
+  );
 
   return (
     <div className="space-y-6 font-sans">
@@ -105,6 +171,7 @@ export function StudentMonitoring() {
               <option value="all">All Programs</option>
               <option value="BSIT">BSIT</option>
               <option value="BSCpE">BSCpE</option>
+              <option value="BSHM">BSHM</option>
               <option value="BSOA">BSOA</option>
             </select>
           </div>
@@ -118,9 +185,10 @@ export function StudentMonitoring() {
               className="w-full bg-slate-50 border border-slate-250 rounded-lg p-2 text-xs focus:ring-[#800000] focus:border-[#800000]"
             >
               <option value="all">All Sections</option>
-              <option value="BSIT 4A">BSIT 4A</option>
-              <option value="BSIT 4B">BSIT 4B</option>
-              <option value="BSCpE 4A">BSCpE 4A</option>
+              <option value="3-1">3-1</option>
+              <option value="3-2">3-2</option>
+              <option value="4-1">4-1</option>
+              <option value="4-2">4-2</option>
             </select>
           </div>
         </CardContent>
@@ -166,7 +234,7 @@ export function StudentMonitoring() {
                       className="hover:bg-slate-50/50 transition-colors cursor-pointer"
                     >
                       <TableCell className="py-3.5 px-4">
-                        <span className="font-bold text-slate-800 text-xs block">{s.name}</span>
+                        <span className="font-bold text-slate-800 text-xs block">{formatLastFirstMI(s.name)}</span>
                         <span className="text-[10px] text-slate-400 font-medium">{s.studentNumber} | {s.section}</span>
                       </TableCell>
                       <TableCell className="py-3.5 px-4 text-xs font-semibold text-slate-650">
@@ -213,7 +281,7 @@ export function StudentMonitoring() {
         <Dialog open={!!selectedStudent} onOpenChange={() => setSelectedStudent(null)}>
           <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{selectedStudent.name}'s OJT Checklist Status</DialogTitle>
+              <DialogTitle>{formatLastFirstMI(selectedStudent.name)}'s OJT Checklist Status</DialogTitle>
               <DialogDescription>
                 Detailed audit of submitted checklists across all stages.
               </DialogDescription>
@@ -225,13 +293,28 @@ export function StudentMonitoring() {
                 <h4 className="font-bold text-slate-800 text-xs border-b pb-1">1. Pre-OJT Clearances</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {selectedStudent.preOJTRequirements.map((r, i) => (
-                    <div key={i} className="flex justify-between items-center p-2 bg-slate-50 rounded border">
-                      <span className="font-medium text-slate-700 truncate max-w-[180px]">{r.name}</span>
-                      {getStatusBadge(r.status)}
-                    </div>
+                    <React.Fragment key={i}>{renderRequirementTile(r, selectedStudent, 'Pre-OJT')}</React.Fragment>
                   ))}
                   <div className="flex justify-between items-center p-2 bg-slate-50 rounded border">
-                    <span className="font-medium text-slate-700">Memorandum of Agreement</span>
+                    <div className="min-w-0">
+                      <span className="font-medium text-slate-700 block">Memorandum of Agreement</span>
+                      {selectedStudent.moaState.fileName && (
+                        <button
+                          type="button"
+                          title="Click to preview file"
+                          onClick={() => setPreviewReq({
+                            studentName: selectedStudent.name,
+                            reqName: 'Memorandum of Agreement',
+                            fileName: selectedStudent.moaState.fileName || '',
+                            stage: 'MOA'
+                          })}
+                          className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-[#800000] hover:underline underline-offset-2 max-w-[190px] cursor-pointer"
+                        >
+                          <FileText className="h-3 w-3 shrink-0" />
+                          <span className="truncate">{selectedStudent.moaState.fileName}</span>
+                        </button>
+                      )}
+                    </div>
                     {getStatusBadge(selectedStudent.moaState.status)}
                   </div>
                 </div>
@@ -242,10 +325,7 @@ export function StudentMonitoring() {
                 <h4 className="font-bold text-slate-800 text-xs border-b pb-1">2. During-OJT Deliverables</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {selectedStudent.duringOJTRequirements.map((r, i) => (
-                    <div key={i} className="flex justify-between items-center p-2 bg-slate-50 rounded border">
-                      <span className="font-medium text-slate-700 truncate max-w-[180px]">{r.name}</span>
-                      {getStatusBadge(r.status)}
-                    </div>
+                    <React.Fragment key={i}>{renderRequirementTile(r, selectedStudent, 'During-OJT')}</React.Fragment>
                   ))}
                 </div>
               </div>
@@ -255,10 +335,7 @@ export function StudentMonitoring() {
                 <h4 className="font-bold text-slate-800 text-xs border-b pb-1">3. Post-OJT Documents</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {selectedStudent.postOJTRequirements.map((r, i) => (
-                    <div key={i} className="flex justify-between items-center p-2 bg-slate-50 rounded border">
-                      <span className="font-medium text-slate-700 truncate max-w-[180px]">{r.name}</span>
-                      {getStatusBadge(r.status)}
-                    </div>
+                    <React.Fragment key={i}>{renderRequirementTile(r, selectedStudent, 'Post-OJT')}</React.Fragment>
                   ))}
                 </div>
               </div>
@@ -266,6 +343,13 @@ export function StudentMonitoring() {
           </DialogContent>
         </Dialog>
       )}
+
+      <RequirementFilePreviewDialog
+        preview={previewReq}
+        onOpenChange={(open) => {
+          if (!open) setPreviewReq(null);
+        }}
+      />
     </div>
   );
 }

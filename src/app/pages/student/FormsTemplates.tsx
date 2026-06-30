@@ -40,9 +40,9 @@ export function FormsTemplates() {
 
         {/* 1. MOA CARD */}
         <Card className="shadow-sm border-slate-200 overflow-hidden">
-          <CardHeader className="bg-slate-50/50 border-b border-slate-105 pb-1.5">
-            <CardTitle className="text-base font-bold text-[#800000] flex items-center gap-2">
-              <FileText className="h-5 w-5 shrink-0" />
+          <CardHeader className="bg-slate-50/50 border-b border-slate-105 px-5 !pt-4 !pb-4">
+            <CardTitle className="text-sm font-bold text-[#800000] flex items-center gap-2">
+              <FileText className="h-4 w-4 shrink-0" />
               Memorandum of Agreement (MOA) Template
             </CardTitle>
           </CardHeader>
@@ -75,9 +75,9 @@ export function FormsTemplates() {
 
         {/* 2. PRE-OJT TEMPLATES */}
         <Card className="shadow-sm border-slate-200">
-          <CardHeader className="bg-slate-50/50 border-b border-slate-105 pb-1.5">
-            <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
-              <FileCheck className="h-5 w-5 text-[#800000]" />
+          <CardHeader className="bg-slate-50/50 border-b border-slate-105 px-5 !pt-4 !pb-4">
+            <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <FileCheck className="h-4 w-4 text-[#800000]" />
               Pre-OJT Templates and Forms
             </CardTitle>
           </CardHeader>
@@ -158,9 +158,9 @@ export function FormsTemplates() {
 
         {/* 3. DURING OJT TEMPLATES */}
         <Card className="shadow-sm border-slate-200">
-          <CardHeader className="bg-slate-50/50 border-b border-slate-105 pb-1.5">
-            <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
-              <FileCheck className="h-5 w-5 text-[#800000]" />
+          <CardHeader className="bg-slate-50/50 border-b border-slate-105 px-5 !pt-4 !pb-4">
+            <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <FileCheck className="h-4 w-4 text-[#800000]" />
               During OJT Templates and Forms
             </CardTitle>
           </CardHeader>
@@ -205,9 +205,9 @@ export function FormsTemplates() {
 
         {/* 4. POST OJT TEMPLATES */}
         <Card className="shadow-sm border-slate-200">
-          <CardHeader className="bg-slate-50/50 border-b border-slate-105 pb-1.5">
-            <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
-              <FileCheck className="h-5 w-5 text-[#800000]" />
+          <CardHeader className="bg-slate-50/50 border-b border-slate-105 px-5 !pt-4 !pb-4">
+            <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <FileCheck className="h-4 w-4 text-[#800000]" />
               Post-OJT Templates and Forms
             </CardTitle>
           </CardHeader>

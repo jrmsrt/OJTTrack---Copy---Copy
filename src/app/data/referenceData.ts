@@ -1,4 +1,4 @@
-// Mock data for the OJT tracking system
+// Reference data for dashboard summaries and template/status labels.
 
 export const studentStats = {
   totalHours: 320,

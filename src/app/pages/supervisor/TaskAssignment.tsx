@@ -8,7 +8,7 @@ import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
 import { Plus, Paperclip } from 'lucide-react';
-import { studentTasks, supervisorInterns } from '../../data/mockData';
+import { studentTasks, supervisorInterns } from '../../data/referenceData';
 
 export function TaskAssignment() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);

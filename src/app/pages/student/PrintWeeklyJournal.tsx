@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
 import { DailyTask, WeeklyJournal as WeeklyJournalRecord, useOJT } from '../../context/OJTContext';
 
@@ -33,7 +33,10 @@ function formatSkills(tasks: DailyTask[], reflection: string) {
 
 export function PrintWeeklyJournal() {
   const { journalId } = useParams<{ journalId: string }>();
+  const [searchParams] = useSearchParams();
   const { students, companies } = useOJT();
+  const isPreview = searchParams.get('preview') === '1';
+  const previewZoom = Number(searchParams.get('zoom') || '0.78');
 
   const exportData = (() => {
     if (!journalId) return null;
@@ -54,10 +57,10 @@ export function PrintWeeklyJournal() {
   const company = student ? companies.find(c => c.id === student.companyId) : null;
 
   useEffect(() => {
-    if (!journal) return;
+    if (!journal || isPreview) return;
     const timer = setTimeout(() => window.print(), 800);
     return () => clearTimeout(timer);
-  }, [journal]);
+  }, [journal, isPreview]);
 
   if (!journal || !student) {
     return (
@@ -77,7 +80,7 @@ export function PrintWeeklyJournal() {
   const department = exportData?.assignedDepartment || 'OJT Department';
 
   return (
-    <div className="weekly-print-root">
+    <div className={`weekly-print-root ${isPreview ? 'preview-mode' : ''}`}>
       <style dangerouslySetInnerHTML={{ __html: `
         .weekly-print-root,
         .weekly-print-root * {
@@ -123,6 +126,18 @@ export function PrintWeeklyJournal() {
           padding: 0.35in 0.5in 0.28in;
           overflow: hidden;
           box-shadow: 0 0 0 1px #cbd5e1;
+        }
+
+        .weekly-print-root.preview-mode {
+          min-height: 0;
+          padding: 8px;
+          overflow: auto;
+        }
+
+        .weekly-print-root.preview-mode .journal-page {
+          transform: scale(${Number.isFinite(previewZoom) ? previewZoom : 0.78});
+          transform-origin: top left;
+          margin: 0;
         }
 
         .campus-header {
@@ -486,10 +501,12 @@ export function PrintWeeklyJournal() {
         }
       ` }} />
 
-      <div className="no-print-btn">
-        <span>Print mode ready. Use Print / Save PDF to download the completed Weekly Journal.</span>
-        <button className="print-button" onClick={() => window.print()}>Print / Save PDF</button>
-      </div>
+      {!isPreview && (
+        <div className="no-print-btn">
+          <span>Print mode ready. Use Print / Save PDF to download the completed Weekly Journal.</span>
+          <button className="print-button" onClick={() => window.print()}>Print / Save PDF</button>
+        </div>
+      )}
 
       <main className="journal-page">
         <header className="campus-header">

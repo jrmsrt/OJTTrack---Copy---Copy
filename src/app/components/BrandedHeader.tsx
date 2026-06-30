@@ -1,10 +1,7 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from './ui/button';
+import { Link } from 'react-router-dom';
 
 export function BrandedHeader() {
-  const navigate = useNavigate();
-
   return (
     <header className="sticky top-0 z-50 bg-white border-b-2 border-[#D4AF37] shadow-sm w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -16,11 +13,14 @@ export function BrandedHeader() {
             className="h-14 w-14 object-contain"
           />
           <div className="flex flex-col text-left">
-            <span className="font-bold text-[#800000] text-sm sm:text-base leading-tight tracking-tight uppercase">
+            <span
+              className="font-bold text-[#800000] text-sm sm:text-lg lg:text-xl leading-tight uppercase"
+              style={{ fontFamily: '"Trajan Pro", "Times New Roman", serif' }}
+            >
               Polytechnic University of the Philippines
             </span>
             <span className="text-xs sm:text-sm text-slate-500 font-medium">
-              OJT Monitoring System
+              InTrack - OJT Monitoring System
             </span>
           </div>
         </Link>
@@ -29,16 +29,10 @@ export function BrandedHeader() {
         <div className="flex items-center gap-4 sm:gap-6">
           <Link 
             to="/login" 
-            className="text-[#800000] font-semibold text-sm sm:text-base hover:text-[#6b0000] transition-colors"
+            className="inline-flex items-center justify-center rounded-md bg-[#800000] px-4 py-2 text-sm sm:text-base font-semibold text-white shadow-sm border border-[#D4AF37]/70 transition-colors hover:bg-[#6b0000] hover:border-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2"
           >
             Login
           </Link>
-          <Button 
-            onClick={() => navigate('/register')} 
-            className="bg-[#800000] hover:bg-[#6b0000] text-white font-bold text-sm sm:text-base px-5 py-2.5 rounded shadow transition-all duration-150"
-          >
-            Register
-          </Button>
         </div>
       </div>
     </header>

@@ -6,8 +6,7 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
-import { Checkbox } from '../../components/ui/checkbox';
-import { AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { AlertCircle, BriefcaseBusiness, Eye, EyeOff, GraduationCap, Info, ShieldCheck } from 'lucide-react';
 import { BrandedHeader } from '../../components/BrandedHeader';
 
 export function Login() {
@@ -24,6 +23,11 @@ export function Login() {
     const result = login(email, password, role);
 
     if (!result.success) {
+      if (result.requiresOtp) {
+        navigate('/verify-otp');
+        return;
+      }
+
       setError(result.error || 'Unable to sign in. Please try again.');
       return;
     }
@@ -45,22 +49,31 @@ export function Login() {
       <BrandedHeader />
       
       <div className="flex-1 flex flex-col items-center justify-center p-4 py-8">
-        <div className="w-full max-w-md">
-          <Card className="shadow-lg border border-slate-200">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-slate-900">Welcome Back</CardTitle>
-              <CardDescription>Select your role and sign in to continue</CardDescription>
+        <div className="w-full max-w-[420px]">
+          <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <CardHeader className="text-center px-6 pt-7 pb-3 gap-1">
+              <CardTitle className="text-2xl font-bold leading-tight text-slate-900">Welcome Back</CardTitle>
+              <CardDescription className="text-xs text-slate-500">Sign in to continue to the OJT monitoring system.</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-6 pb-6">
               <Tabs value={role} onValueChange={handleRoleChange}>
-                <TabsList className="grid w-full grid-cols-3 mb-6 h-auto">
-                  <TabsTrigger value="student" className="min-h-10 text-xs sm:text-sm">Student</TabsTrigger>
-                  <TabsTrigger value="adviser" className="min-h-10 text-xs sm:text-sm">Adviser</TabsTrigger>
-                  <TabsTrigger value="coordinator" className="min-h-10 text-xs sm:text-sm">Coordinator</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3 mb-4 h-10 rounded-xl bg-slate-100 p-0.5">
+                  <TabsTrigger value="student" className="h-full rounded-[9px] px-1 text-xs font-semibold text-slate-600 data-[state=active]:bg-white data-[state=active]:text-[#990000] data-[state=active]:shadow-sm">
+                    <GraduationCap className="h-3.5 w-3.5" />
+                    Student
+                  </TabsTrigger>
+                  <TabsTrigger value="adviser" className="h-full rounded-[9px] px-1 text-xs font-semibold text-slate-600 data-[state=active]:bg-white data-[state=active]:text-[#990000] data-[state=active]:shadow-sm">
+                    <BriefcaseBusiness className="h-3.5 w-3.5" />
+                    Adviser
+                  </TabsTrigger>
+                  <TabsTrigger value="coordinator" className="h-full rounded-[9px] px-1 text-xs font-semibold text-slate-600 data-[state=active]:bg-white data-[state=active]:text-[#990000] data-[state=active]:shadow-sm">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    Coordinator
+                  </TabsTrigger>
                 </TabsList>
 
                 {error && (
-                  <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 flex gap-2 text-sm text-red-700">
+                  <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 flex gap-2 text-xs text-red-700">
                     <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
                     <span>{error}</span>
                   </div>
@@ -68,19 +81,25 @@ export function Login() {
 
                 <TabsContent value="student">
                   <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-slate-500">PUP Webmail</Label>
                       <Input
                         id="email"
                         type="email"
-                        placeholder="student@university.edu"
+                        placeholder="yourname@iskolarngbayan.pup.edu.ph"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        className="h-10 rounded-lg border-slate-200 bg-slate-50 px-3 text-sm"
                         required
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-slate-500">Password</Label>
+                        <Link to="/forgot-password" className="text-xs text-[#990000] font-semibold hover:underline">
+                          Forgot Password?
+                        </Link>
+                      </div>
                       <div className="relative">
                         <Input
                           id="password"
@@ -88,7 +107,7 @@ export function Login() {
                           placeholder="Enter your password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="pr-10"
+                          className="h-10 rounded-lg border-slate-200 bg-slate-50 px-3 pr-10 text-sm"
                           required
                         />
                         <button
@@ -100,44 +119,33 @@ export function Login() {
                         </button>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="remember" />
-                        <Label htmlFor="remember" className="text-sm cursor-pointer">
-                          Remember me
-                        </Label>
-                      </div>
-                      <Link to="/forgot-password" className="text-sm text-[#800000] font-semibold hover:underline">
-                        Forgot password?
-                      </Link>
-                    </div>
-                    <Button type="submit" className="w-full bg-[#800000] hover:bg-[#6b0000] cursor-pointer text-white">
-                      Sign In
+                    <Button type="submit" className="h-11 w-full rounded-lg bg-[#800000] hover:bg-[#6b0000] text-sm font-bold text-white shadow-sm cursor-pointer transition-colors mt-2">
+                      Login
                     </Button>
-                    <p className="text-center text-sm text-slate-600">
-                      Need a student account?{' '}
-                      <Link to="/register/student" className="text-[#800000] font-semibold hover:underline">
-                        Register
-                      </Link>
-                    </p>
                   </form>
                 </TabsContent>
 
                 <TabsContent value="adviser">
                   <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="adviser-email">Email</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="adviser-email" className="text-xs font-bold uppercase tracking-wider text-slate-500">PUP Webmail</Label>
                       <Input
                         id="adviser-email"
                         type="email"
-                        placeholder="adviser@university.edu"
+                        placeholder="faculty@pup.edu.ph"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        className="h-10 rounded-lg border-slate-200 bg-slate-50 px-3 text-sm"
                         required
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="adviser-password">Password</Label>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="adviser-password" className="text-xs font-bold uppercase tracking-wider text-slate-500">Password</Label>
+                        <Link to="/forgot-password" className="text-xs text-[#990000] font-semibold hover:underline">
+                          Forgot Password?
+                        </Link>
+                      </div>
                       <div className="relative">
                         <Input
                           id="adviser-password"
@@ -145,7 +153,7 @@ export function Login() {
                           placeholder="Enter your password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="pr-10"
+                          className="h-10 rounded-lg border-slate-200 bg-slate-50 px-3 pr-10 text-sm"
                           required
                         />
                         <button
@@ -157,44 +165,30 @@ export function Login() {
                         </button>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="adviser-remember" />
-                        <Label htmlFor="adviser-remember" className="text-sm cursor-pointer">
-                          Remember me
-                        </Label>
-                      </div>
-                      <Link to="/forgot-password" className="text-sm text-[#800000] font-semibold hover:underline">
-                        Forgot password?
-                      </Link>
-                    </div>
-                    <Button type="submit" className="w-full bg-[#800000] hover:bg-[#6b0000] text-white">
-                      Sign In
+                    <Button type="submit" className="h-11 w-full rounded-lg bg-[#800000] hover:bg-[#6b0000] text-sm font-bold text-white shadow-sm cursor-pointer transition-colors mt-2">
+                      Login
                     </Button>
-                    <p className="text-center text-sm text-slate-600">
-                      Need an adviser account?{' '}
-                      <Link to="/register/adviser" className="text-[#800000] font-semibold hover:underline">
-                        Register
-                      </Link>
-                    </p>
                   </form>
                 </TabsContent>
 
                 <TabsContent value="coordinator">
                   <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="coordinator-email">Email</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="coordinator-email" className="text-xs font-bold uppercase tracking-wider text-slate-500">Username or Admin Email</Label>
                       <Input
                         id="coordinator-email"
-                        type="email"
-                        placeholder="coordinator@university.edu"
+                        type="text"
+                        placeholder="admin"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        className="h-10 rounded-lg border-slate-200 bg-slate-50 px-3 text-sm"
                         required
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="coordinator-password">Password</Label>
+                    <div className="space-y-1.5">
+                      <div>
+                        <Label htmlFor="coordinator-password" className="text-xs font-bold uppercase tracking-wider text-slate-500">Password</Label>
+                      </div>
                       <div className="relative">
                         <Input
                           id="coordinator-password"
@@ -202,7 +196,7 @@ export function Login() {
                           placeholder="Enter your password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="pr-10"
+                          className="h-10 rounded-lg border-slate-200 bg-slate-50 px-3 pr-10 text-sm"
                           required
                         />
                         <button
@@ -214,41 +208,33 @@ export function Login() {
                         </button>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="coordinator-remember" />
-                        <Label htmlFor="coordinator-remember" className="text-sm cursor-pointer">
-                          Remember me
-                        </Label>
-                      </div>
-                      <Link to="/forgot-password" className="text-sm text-[#800000] font-semibold hover:underline">
-                        Forgot password?
-                      </Link>
-                    </div>
-                    <Button type="submit" className="w-full bg-[#800000] hover:bg-[#6b0000] text-white">
-                      Sign In
+                    <Button type="submit" className="h-11 w-full rounded-lg bg-[#800000] hover:bg-[#6b0000] text-sm font-bold text-white shadow-sm cursor-pointer transition-colors mt-2">
+                      Login
                     </Button>
-                    <p className="text-center text-xs text-slate-500">
-                      Coordinator accounts are created by system administrators.
-                    </p>
                   </form>
                 </TabsContent>
               </Tabs>
-            </CardContent>
-          </Card>
 
-          <p className="text-center text-xs text-slate-500 mt-6">
-            Demo accounts remain available; new Student and Adviser accounts require email verification.
-          </p>
+              <div className="mt-6 rounded-lg border border-cyan-200 bg-cyan-50/50 px-3.5 py-2.5 text-center text-xs leading-relaxed text-cyan-900">
+                <div className="flex justify-center gap-2">
+                  <Info className="h-4 w-4 mt-0.5 shrink-0 fill-cyan-900/10 text-cyan-700" />
+                  <p>
+                    Users must activate their account before first use.<br />
+                    Use your PUP Webmail and the default password provided by the administrator.
+                  </p>
+                </div>
+              </div>
 
-          <Card className="mt-4 bg-red-50 border-red-200 shadow-sm">
-            <CardContent className="p-4 text-left">
-              <h3 className="font-semibold text-[#800000] mb-2 text-sm">Login Options</h3>
-              <ul className="text-xs text-slate-700 space-y-1 list-disc pl-4">
-                <li>Student Login: track attendance, upload requirements, and submit reports</li>
-                <li>Adviser Login: monitor assigned interns, review journals, and submit grades</li>
-                <li>OJT Coordinator Login: manage programs, templates, and document reviews</li>
-              </ul>
+              <p className="text-center text-[10px] text-slate-400 mt-6 leading-relaxed">
+                By using this service, you understood and agree to the PUP Online Services{' '}
+                <a href="https://www.pup.edu.ph/terms/" target="_blank" rel="noreferrer" className="text-blue-600 font-medium hover:underline">
+                  Terms of Use
+                </a>{' '}
+                and{' '}
+                <a href="https://www.pup.edu.ph/privacy/" target="_blank" rel="noreferrer" className="text-blue-600 font-medium hover:underline">
+                  Privacy Statement
+                </a>.
+              </p>
             </CardContent>
           </Card>
         </div>

@@ -1,0 +1,226 @@
+
+> @figma/my-make-file@0.0.1 dev
+> concurrently "npm run dev:server" "npm run dev:client"
+
+[0] 
+[0] > @figma/my-make-file@0.0.1 dev:server
+[0] > python -m uvicorn api.main:app --host 0.0.0.0 --port 3001 --reload
+[0] 
+[1] 
+[1] > @figma/my-make-file@0.0.1 dev:client
+[1] > vite
+[1] 
+[0] INFO:     Will watch for changes in these directories: ['C:\\Users\\user\\Downloads\\OJTTrack - Copy - Copy']
+[0] INFO:     Uvicorn running on http://0.0.0.0:3001 (Press CTRL+C to quit)
+[0] INFO:     Started reloader process [14196] using WatchFiles
+[1] 
+[1]   [32m[1mVITE[22m v6.3.5[39m  [2mready in [0m[1m3597[22m[2m[0m ms[22m
+[1] 
+[1]   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[1] [2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[0] INFO:     Started server process [28100]
+[0] INFO:     Waiting for application startup.
+[0] INFO:     Application startup complete.
+[0] INFO:     127.0.0.1:65464 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:65465 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:65463 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53628 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53627 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53629 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52628 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53771 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53773 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53774 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53778 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53777 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53694 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53697 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54044 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54046 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54047 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54050 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54052 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54053 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:49296 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54276 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54278 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54277 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54283 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54282 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54286 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:57036 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:64848 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:64851 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:64850 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:64855 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:64858 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:64854 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:61285 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:56311 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:56312 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:56310 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:56317 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:56316 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:56318 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54099 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:50360 - "PUT /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53859 - "POST /api/send-otp HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:59556 - "PUT /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:59557 - "PUT /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:49671 - "PUT /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:49672 - "PUT /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:49984 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52474 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52264 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[1] [2m12:00:32 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx, /src/styles/index.css[22m
+[1] [2m12:00:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx[22m Could not Fast Refresh ("router" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[1] [2m12:00:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles/index.css, /src/app/App.tsx[22m
+[1] [2m12:00:39 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\components\Layout.tsx, /src/styles/index.css[22m
+[0] INFO:     127.0.0.1:64625 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:64627 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:64626 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:64631 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:64633 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:64635 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:50480 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[1] [2m12:03:27 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PreOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:03:32 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\DuringOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:03:40 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PostOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:03:55 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\components\Layout.tsx, /src/styles/index.css[22m
+[1] [2m12:04:02 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx, /src/styles/index.css[22m
+[1] [2m12:04:03 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx[22m Could not Fast Refresh ("router" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[1] [2m12:04:03 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles/index.css, /src/app/App.tsx[22m
+[1] [2m12:04:07 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx, /src/styles/index.css[22m
+[1] [2m12:04:07 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx[22m Could not Fast Refresh ("router" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[1] [2m12:04:07 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles/index.css, /src/app/App.tsx[22m
+[1] [2m12:07:22 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\RequirementReviews.tsx, /src/styles/index.css[22m
+[1] [2m12:07:45 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PreOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:08:07 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\DuringOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:08:29 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PostOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:09:13 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\RequirementReviews.tsx, /src/styles/index.css[22m
+[1] [2m12:09:18 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx, /src/styles/index.css[22m
+[1] [2m12:09:19 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx[22m Could not Fast Refresh ("router" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[1] [2m12:09:19 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles/index.css, /src/app/App.tsx[22m
+[0] INFO:     127.0.0.1:55725 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:58320 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[1] [2m12:12:56 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\RequirementReviews.tsx, /src/styles/index.css[22m
+[1] [2m12:13:16 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PreOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:13:20 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PreOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:13:30 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\DuringOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:13:41 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PostOJTReview.tsx, /src/styles/index.css[22m
+[0] INFO:     127.0.0.1:59828 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[1] [2m12:13:57 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\RequirementReviews.tsx, /src/styles/index.css[22m
+[1] [2m12:15:32 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\RequirementReviews.tsx, /src/styles/index.css[22m
+[1] [2m12:15:45 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PreOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:15:59 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\DuringOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:16:11 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PostOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:19:00 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PreOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:19:06 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\DuringOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:19:11 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PostOJTReview.tsx, /src/styles/index.css[22m
+[0] INFO:     127.0.0.1:58759 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:58761 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:58760 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:58765 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:58767 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:58768 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53362 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[1] [2m12:20:29 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PreOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:20:35 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\DuringOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:20:42 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PostOJTReview.tsx, /src/styles/index.css[22m
+[0] INFO:     127.0.0.1:54353 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54354 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54355 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54359 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:54361 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:51794 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:51796 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52063 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52064 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52062 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52069 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52068 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52070 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:63683 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:59326 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:59325 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:59323 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:59329 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:59330 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:59333 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53138 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52687 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52686 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52690 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52691 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52695 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:52694 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:50126 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[1] [2m12:22:05 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PreOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:22:12 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\DuringOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:22:17 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PostOJTReview.tsx, /src/styles/index.css[22m
+[0] INFO:     127.0.0.1:60923 - "PUT /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:55003 - "POST /api/send-otp HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:59318 - "PUT /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:51250 - "PUT /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:63302 - "PUT /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:63303 - "PUT /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:63002 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:65489 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:65491 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:65490 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:65495 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:65497 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:65499 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:53508 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[1] [2m12:24:31 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PreOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:24:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\DuringOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:24:43 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PostOJTReview.tsx, /src/styles/index.css[22m
+[0] INFO:     127.0.0.1:57520 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:57522 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:57521 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:57527 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:57526 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:57530 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:61838 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[1] [2m12:27:28 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PreOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:27:34 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\DuringOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:27:40 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PostOJTReview.tsx, /src/styles/index.css[22m
+[0] INFO:     127.0.0.1:50994 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:50993 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:50995 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:50998 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:51001 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:51003 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:62669 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[1] [2m12:30:38 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PreOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:30:44 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\DuringOJTReview.tsx, /src/styles/index.css[22m
+[1] [2m12:30:50 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\PostOJTReview.tsx, /src/styles/index.css[22m
+[0] INFO:     127.0.0.1:49252 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:49251 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:49253 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:49257 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:49258 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:49261 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:49671 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[1] [2m12:39:29 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\components\Layout.tsx, /src/styles/index.css[22m
+[1] [2m1:04:26 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\adviser\AdviserDashboard.tsx, /src/styles/index.css[22m
+[1] [2m1:04:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\components\Layout.tsx, /src/styles/index.css[22m
+[1] [2m1:04:42 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx, /src/styles/index.css[22m
+[1] [2m1:04:42 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx[22m Could not Fast Refresh ("router" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[1] [2m1:04:42 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles/index.css, /src/app/App.tsx[22m
+[1] [2m1:05:37 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\components\Layout.tsx, /src/styles/index.css[22m
+[1] [2m1:05:45 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx, /src/styles/index.css[22m
+[1] [2m1:05:45 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx[22m Could not Fast Refresh ("router" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[1] [2m1:05:45 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles/index.css, /src/app/App.tsx[22m
+[0] INFO:     127.0.0.1:61331 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:61332 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:61330 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:61337 - "GET /api/auth-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:61336 - "GET /api/authorized-students HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:61338 - "GET /api/ojt-state HTTP/1.1" 200 OK
+[0] INFO:     127.0.0.1:61618 - "PUT /api/ojt-state HTTP/1.1" 200 OK
+[1] [2m1:08:45 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\components\Layout.tsx, /src/styles/index.css[22m
+[1] [2m1:08:53 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx, /src/styles/index.css[22m
+[1] [2m1:08:54 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\routes.tsx[22m Could not Fast Refresh ("router" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[1] [2m1:08:54 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles/index.css, /src/app/App.tsx[22m
+[1] [2m1:13:06 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\user\Downloads\OJTTrack - Copy - Copy\src\app\pages\coordinator\CoordinatorDashboard.tsx, /src/styles/index.css[22m

@@ -9,11 +9,10 @@ import {
   Users, 
   Clock, 
   FileCheck, 
+  FileText,
   Award, 
   ArrowRight, 
   Calendar,
-  AlertTriangle,
-  ClipboardList
 } from 'lucide-react';
 
 export function AdviserDashboard() {
@@ -28,13 +27,11 @@ export function AdviserDashboard() {
   const totalCount = assignedStudents.length;
   
   // Pending approvals
-  let pendingTaskCount = 0;
   let pendingJournalCount = 0;
   let pendingPortfolioCount = 0;
   let completedHoursCount = 0;
 
   assignedStudents.forEach(s => {
-    pendingTaskCount += s.dailyTasks.filter(t => t.status === 'Submitted').length;
     pendingJournalCount += s.weeklyJournals.filter(j => j.status === 'Submitted').length;
     if (s.portfolioSubmitted && !s.portfolioApproved) {
       pendingPortfolioCount++;
@@ -141,18 +138,17 @@ export function AdviserDashboard() {
             <CardDescription>Actions requiring your review and endorsement signature.</CardDescription>
           </CardHeader>
           <CardContent className="p-0 overflow-x-auto">
-            {pendingJournalCount === 0 && pendingPortfolioCount === 0 && pendingTaskCount === 0 ? (
+            {pendingJournalCount === 0 && pendingPortfolioCount === 0 ? (
               <div className="p-8 text-center text-slate-400 text-sm">
                 All queues clear! No pending submissions.
               </div>
             ) : (
               <div className="divide-y divide-slate-100">
                 {assignedStudents.map((s) => {
-                  const sTasks = s.dailyTasks.filter(t => t.status === 'Submitted');
                   const sJournals = s.weeklyJournals.filter(j => j.status === 'Submitted');
                   const needsPortfolio = s.portfolioSubmitted && !s.portfolioApproved;
 
-                  if (sTasks.length === 0 && sJournals.length === 0 && !needsPortfolio) return null;
+                  if (sJournals.length === 0 && !needsPortfolio) return null;
 
                   return (
                     <div key={s.studentId} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors text-xs">
@@ -161,11 +157,6 @@ export function AdviserDashboard() {
                         <p className="text-[10px] text-slate-400 mt-0.5">{s.program} | {s.section}</p>
                       </div>
                       <div className="flex gap-2.5 items-center">
-                        {sTasks.length > 0 && (
-                          <Badge variant="outline" className="text-[10px] font-semibold text-blue-600 border-blue-200 bg-blue-50">
-                            {sTasks.length} Daily Logs
-                          </Badge>
-                        )}
                         {sJournals.length > 0 && (
                           <Badge variant="outline" className="text-[10px] font-semibold text-amber-700 border-amber-200 bg-amber-50">
                             {sJournals.length} Weekly Journals
@@ -180,8 +171,7 @@ export function AdviserDashboard() {
                           size="sm"
                           onClick={() => {
                             if (sJournals.length > 0) navigate('/adviser/journals');
-                            else if (needsPortfolio) navigate('/adviser/portfolio');
-                            else navigate('/adviser/tasks');
+                            else navigate('/adviser/portfolio');
                           }}
                           className="bg-[#800000] hover:bg-[#6b0000] text-white text-[10px] h-7 font-semibold"
                         >
@@ -198,46 +188,67 @@ export function AdviserDashboard() {
 
         {/* Quick links to monitors */}
         <Card className="shadow-sm border-slate-200">
-          <CardHeader>
+          <CardHeader className="pb-3">
             <CardTitle className="text-base font-bold text-slate-800">Quick Navigation</CardTitle>
             <CardDescription>Shortcut access to monitoring panels.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <Button
-              variant="outline"
-              onClick={() => navigate('/adviser/students')}
-              className="w-full text-xs h-11 border-slate-200 text-slate-700 flex justify-between items-center px-4 hover:bg-slate-50 cursor-pointer"
-            >
-              <span className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-slate-500" />
-                Student Monitoring Board
-              </span>
-              <ChevronRight className="h-4 w-4 text-slate-400" />
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={() => navigate('/adviser/attendance')}
-              className="w-full text-xs h-11 border-slate-200 text-slate-700 flex justify-between items-center px-4 hover:bg-slate-50 cursor-pointer"
-            >
-              <span className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-slate-500" />
-                Attendance Monitor Calendar
-              </span>
-              <ChevronRight className="h-4 w-4 text-slate-400" />
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={() => navigate('/adviser/evaluation')}
-              className="w-full text-xs h-11 border-slate-200 text-slate-700 flex justify-between items-center px-4 hover:bg-slate-50 cursor-pointer"
-            >
-              <span className="flex items-center gap-2">
-                <Award className="h-4 w-4 text-slate-500" />
-                Intern Midterm & Final Grades
-              </span>
-              <ChevronRight className="h-4 w-4 text-slate-400" />
-            </Button>
+          <CardContent className="space-y-3">
+            {[
+              {
+                title: "Student Monitoring Board",
+                description: "Review progress, weekly journals, & portfolios",
+                path: "/adviser/students",
+                icon: Users,
+                iconColor: "text-indigo-600 dark:text-indigo-400",
+                iconBg: "bg-indigo-50 dark:bg-indigo-950/40",
+                hoverBorder: "hover:border-indigo-200 dark:hover:border-indigo-900/50",
+                hoverBg: "hover:bg-indigo-50/10 dark:hover:bg-indigo-950/10",
+              },
+              {
+                title: "Attendance Monitor Calendar",
+                description: "Check daily student time logs & calendar sheets",
+                path: "/adviser/attendance",
+                icon: Calendar,
+                iconColor: "text-amber-600 dark:text-amber-400",
+                iconBg: "bg-amber-50 dark:bg-amber-950/40",
+                hoverBorder: "hover:border-amber-200 dark:hover:border-amber-900/50",
+                hoverBg: "hover:bg-amber-50/10 dark:hover:bg-amber-950/10",
+              },
+              {
+                title: "Forms and Templates",
+                description: "Download university templates & guidelines",
+                path: "/adviser/forms-templates",
+                icon: FileText,
+                iconColor: "text-blue-600 dark:text-blue-400",
+                iconBg: "bg-blue-50 dark:bg-blue-950/40",
+                hoverBorder: "hover:border-blue-200 dark:hover:border-blue-900/50",
+                hoverBg: "hover:bg-blue-50/10 dark:hover:bg-blue-950/10",
+              }
+            ].map((link, idx) => {
+              const Icon = link.icon;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => navigate(link.path)}
+                  className={`w-full text-left p-3 rounded-xl border border-slate-100 bg-white transition-all duration-200 flex items-center justify-between group cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:shadow-md ${link.hoverBorder} ${link.hoverBg}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${link.iconBg} shrink-0 transition-transform duration-200 group-hover:scale-105`}>
+                      <Icon className={`h-4.5 w-4.5 ${link.iconColor}`} />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-xs font-semibold text-slate-700 group-hover:text-slate-900 transition-colors block truncate">
+                        {link.title}
+                      </span>
+                      <span className="text-[10px] text-slate-400 mt-0.5 block truncate font-normal leading-normal">
+                        {link.description}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+                </button>
+              );
+            })}
           </CardContent>
         </Card>
       </div>

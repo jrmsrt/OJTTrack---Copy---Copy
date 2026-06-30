@@ -1,4 +1,4 @@
-# OJTTrack
+# InTrack - OJT Monitoring System
 
 ## How to Run the App from a Downloaded ZIP File
 
@@ -50,15 +50,44 @@ On Windows, you can:
 
 ### 4. Install the App Packages
 
-Run this command once:
+Run these commands once:
 
 ```bash
 npm install
+python -m pip install -r requirements.txt
 ```
 
-This downloads the required packages into a `node_modules` folder.
+This downloads the website packages into `node_modules` and installs the FastAPI backend packages for Python.
 
-### 5. Start the App
+### 5. Set Up MySQL Workbench
+
+1. Open MySQL Workbench and connect to your local MySQL server.
+2. Open `database/schema.sql`.
+3. Run the full script. It creates the `pup_intrack` database and the tables used by the app.
+4. Confirm that the `authorized_students` table contains the initial student whitelist.
+5. Copy `.env.example` to a new file named `.env`.
+6. In `.env`, update `DB_USER` and `DB_PASSWORD` to match your MySQL Workbench connection.
+
+Example:
+
+```text
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_mysql_password
+DB_NAME=pup_intrack
+API_PORT=3001
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_sender_email@gmail.com
+SMTP_PASS=your_app_password
+SMTP_FROM="InTrack - OJT Monitoring System <your_sender_email@gmail.com>"
+```
+
+The OTP sender uses SMTP. If the SMTP fields are blank, the local API will generate the OTP email in the server output for development. Add real SMTP credentials before using the app with students.
+
+### 6. Start the App
 
 Run:
 
@@ -66,15 +95,25 @@ Run:
 npm run dev
 ```
 
-The terminal will show a local website address, usually:
+The terminal starts both the database API and the website. The website address is usually:
 
 ```text
 http://localhost:5173/
 ```
 
-Open that address in your browser.
+Open that address in your browser. The app API runs at:
 
-### 6. Stop the App
+```text
+http://localhost:3001/
+```
+
+FastAPI's interactive API docs are available at:
+
+```text
+http://localhost:3001/docs
+```
+
+### 7. Stop the App
 
 To stop the app, go back to the terminal and press:
 

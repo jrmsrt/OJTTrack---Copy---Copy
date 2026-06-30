@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useOJT, StudentOJTProfile } from '../../context/OJTContext';
+import { DEFAULT_STUDENT_PASSWORD, useAuth } from '../../context/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
@@ -33,10 +34,36 @@ import {
   DialogTrigger,
 } from '../../components/ui/dialog';
 
+function formatLastFirstMI(fullName: string): string {
+  if (!fullName) return '';
+  if (fullName.includes(',')) return fullName;
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length <= 1) return fullName;
+  
+  const lastName = parts[parts.length - 1];
+  const secondToLast = parts[parts.length - 2];
+  if (secondToLast.endsWith('.') || (secondToLast.length === 1 && /[A-Z]/i.test(secondToLast))) {
+    const mi = secondToLast.endsWith('.') ? secondToLast : `${secondToLast}.`;
+    const firstName = parts.slice(0, parts.length - 2).join(' ');
+    return `${lastName}, ${firstName} ${mi}`;
+  }
+  
+  if (parts.length === 2) {
+    return `${lastName}, ${parts[0]}`;
+  }
+  
+  const middleName = parts[parts.length - 2];
+  const firstName = parts.slice(0, parts.length - 2).join(' ');
+  const middleInitial = middleName.charAt(0).toUpperCase();
+  return `${lastName}, ${firstName} ${middleInitial}.`;
+}
+
 export function StudentManagement() {
   const { students, addStudentProfile, updateStudentProfile } = useOJT();
+  const { authorizeStudent, getAuthorizedStudents, toggleAuthorizedStudent } = useAuth();
   
   const [searchTerm, setSearchTerm] = useState('');
+  const [authRefreshKey, setAuthRefreshKey] = useState(0);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<StudentOJTProfile | null>(null);
@@ -48,6 +75,7 @@ export function StudentManagement() {
   const [program, setProgram] = useState('BSIT — Bachelor of Science in Information Technology');
   const [section, setSection] = useState('BSIT 4A');
   const [adviserName, setAdviserName] = useState('Michael Chen');
+  const authorizedStudents = getAuthorizedStudents();
 
   const filteredStudents = students.filter(s => 
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -58,6 +86,19 @@ export function StudentManagement() {
     e.preventDefault();
     if (!name.trim() || !studentNumber.trim() || !email.trim()) {
       toast.error("Please fill in name, ID, and email.");
+      return;
+    }
+
+    const whitelistResult = authorizeStudent({
+      studentNumber,
+      name,
+      email,
+      program,
+      section,
+    });
+
+    if (!whitelistResult.success) {
+      toast.error(whitelistResult.error || 'Unable to add student to authorized masterlist.');
       return;
     }
 
@@ -74,7 +115,10 @@ export function StudentManagement() {
       companyName: 'TechCorp Inc.'
     });
 
-    toast.success(`Intern ${name} added to the system database!`);
+    setAuthRefreshKey((key) => key + 1);
+    toast.success(`Intern ${name} added to the authorized masterlist!`, {
+      description: `Default password for first activation: ${DEFAULT_STUDENT_PASSWORD}`
+    });
     setAddDialogOpen(false);
     clearForm();
   };
@@ -104,16 +148,27 @@ export function StudentManagement() {
 
   const handleImportRoster = () => {
     toast.success("Roster Excel parsing completed!", {
-      description: "Added 12 student records to advisory sections."
+      description: `Imported records are whitelisted and use ${DEFAULT_STUDENT_PASSWORD} for first activation.`
     });
   };
+
+  const getAuthorizedRecord = (studentNumber: string) =>
+    authorizedStudents.find((student) => student.studentNumber === studentNumber);
+
+  const handleToggleStudentAccess = (studentNumber: string) => {
+    toggleAuthorizedStudent(studentNumber);
+    setAuthRefreshKey((key) => key + 1);
+    toast.success('Student access status updated.');
+  };
+
+  void authRefreshKey;
 
   return (
     <div className="space-y-6 font-sans">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 font-sans">Student Management</h1>
-          <p className="text-slate-500 text-sm mt-0.5 font-light">Register, allocate, and oversight internship metadata records.</p>
+          <p className="text-slate-500 text-sm mt-0.5 font-light">Import students into the authorized masterlist, manage activation, and allocate adviser oversight.</p>
         </div>
         <div className="flex gap-2">
           <Button 
@@ -230,15 +285,22 @@ export function StudentManagement() {
                 <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Assigned Adviser</TableHead>
                 <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Active Section</TableHead>
                 <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">OJT Status Stage</TableHead>
-                <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase text-center w-28">Action</TableHead>
+                <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Account Access</TableHead>
+                <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Activation</TableHead>
+                <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase text-center w-48">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredStudents.map((s) => (
+              {filteredStudents.map((s) => {
+                const authRecord = getAuthorizedRecord(s.studentNumber);
+                const isEnabled = authRecord?.accountStatus !== 'DISABLED';
+                const isActivated = Boolean(authRecord?.activated);
+
+                return (
                 <TableRow key={s.studentId} className="hover:bg-slate-50/50 transition-colors">
                   <TableCell className="py-3.5 px-4 font-sans">
-                    <span className="font-bold text-slate-800 text-xs block">{s.name}</span>
-                    <span className="text-[10px] text-slate-450 font-medium">{s.studentNumber} | {s.email}</span>
+                    <span className="font-bold text-slate-800 text-xs block">{formatLastFirstMI(s.name)}</span>
+                    <span className="text-[10px] text-slate-455 font-medium">{s.studentNumber} | {s.email}</span>
                   </TableCell>
                   <TableCell className="py-3.5 px-4 text-xs text-slate-500 font-light truncate max-w-[150px]">
                     {s.program.split('—')[0]}
@@ -252,23 +314,44 @@ export function StudentManagement() {
                   <TableCell className="py-3.5 px-4 font-semibold text-xs">
                     <Badge variant="outline" className="text-[10px] font-semibold text-slate-700">{s.stage.split(':')[1] || s.stage}</Badge>
                   </TableCell>
+                  <TableCell className="py-3.5 px-4 font-semibold text-xs">
+                    <Badge className={isEnabled ? 'bg-green-100 text-green-800 hover:bg-green-100' : 'bg-red-100 text-red-800 hover:bg-red-100'}>
+                      {isEnabled ? 'Enabled' : 'Disabled'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-3.5 px-4 font-semibold text-xs">
+                    <Badge className={isActivated ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' : 'bg-amber-100 text-amber-800 hover:bg-amber-100'}>
+                      {isActivated ? 'Activated' : 'Pending'}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="py-3.5 px-4 text-center">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setSelectedStudent(s);
-                        setSection(s.section);
-                        setAdviserName(s.adviserName);
-                        setAssignDialogOpen(true);
-                      }}
-                      className="text-[10px] h-7 border-slate-205 text-slate-600 hover:bg-slate-50 cursor-pointer font-bold"
-                    >
-                      Allocate / Reassign
-                    </Button>
+                    <div className="flex justify-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedStudent(s);
+                          setSection(s.section);
+                          setAdviserName(s.adviserName);
+                          setAssignDialogOpen(true);
+                        }}
+                        className="text-[10px] h-7 border-slate-205 text-slate-600 hover:bg-slate-50 cursor-pointer font-bold"
+                      >
+                        Allocate
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleToggleStudentAccess(s.studentNumber)}
+                        className={`text-[10px] h-7 cursor-pointer font-bold ${isEnabled ? 'border-red-200 text-red-700 hover:bg-red-50' : 'border-green-200 text-green-700 hover:bg-green-50'}`}
+                      >
+                        {isEnabled ? 'Disable' : 'Enable'}
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              );
+              })}
             </TableBody>
           </Table>
         </CardContent>
@@ -281,7 +364,7 @@ export function StudentManagement() {
             <form onSubmit={handleAssignSubmit}>
               <DialogHeader>
                 <DialogTitle>Allocate Section & Adviser</DialogTitle>
-                <DialogDescription>Assign section supervisor for <span className="font-semibold text-slate-800">{selectedStudent.name}</span>.</DialogDescription>
+                <DialogDescription>Assign section supervisor for <span className="font-semibold text-slate-800">{formatLastFirstMI(selectedStudent.name)}</span>.</DialogDescription>
               </DialogHeader>
 
               <div className="py-4 space-y-4 text-xs">

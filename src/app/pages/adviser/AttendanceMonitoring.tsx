@@ -37,15 +37,60 @@ import {
 import { toast } from 'sonner';
 
 export function AttendanceMonitoring() {
-  const { students, updateDTRStatus, companies } = useOJT();
+  const { students, updateDTRStatus } = useOJT();
   
   const [activeTab, setActiveTab] = useState<'logs' | 'dtrs'>('logs');
   const [searchTerm, setSearchTerm] = useState('');
+  const [sectionFilter, setSectionFilter] = useState('all');
+  const [programFilter, setProgramFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('');
+  const [weekFilter, setWeekFilter] = useState('');
+  const [dtrMonthFilter, setDtrMonthFilter] = useState('');
   
   // Review Dialog States
   const [selectedDtr, setSelectedDtr] = useState<any | null>(null);
   const [remarks, setRemarks] = useState('');
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+
+  const getComparableSection = (section: string) => {
+    const normalizedSection = section.trim().toUpperCase();
+    const legacyMatch = normalizedSection.match(/\b([34])([AB])$/);
+
+    if (legacyMatch) {
+      return `${legacyMatch[1]}-${legacyMatch[2] === 'A' ? '1' : '2'}`;
+    }
+
+    return section.trim();
+  };
+
+  const getWeekRange = (weekValue: string) => {
+    const [yearValue, weekNumberValue] = weekValue.split('-W');
+    const year = Number(yearValue);
+    const weekNumber = Number(weekNumberValue);
+
+    if (!year || !weekNumber) return null;
+
+    const janFourth = new Date(year, 0, 4);
+    const janFourthDay = janFourth.getDay() || 7;
+    const firstWeekMonday = new Date(janFourth);
+    firstWeekMonday.setDate(janFourth.getDate() - janFourthDay + 1);
+
+    const start = new Date(firstWeekMonday);
+    start.setDate(firstWeekMonday.getDate() + (weekNumber - 1) * 7);
+
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+
+    return { start, end };
+  };
+
+  const isDateWithinWeek = (dateValue: string, weekValue: string) => {
+    const range = getWeekRange(weekValue);
+    if (!range) return true;
+
+    const date = new Date(`${dateValue}T00:00:00`);
+    return date >= range.start && date <= range.end;
+  };
 
   // Flatten all attendance logs across all students
   const allLogs = students.flatMap(s => 
@@ -53,6 +98,7 @@ export function AttendanceMonitoring() {
       ...a,
       studentName: s.name,
       studentNumber: s.studentNumber,
+      program: s.program,
       section: s.section,
       companyName: s.companyName
     }))
@@ -76,18 +122,33 @@ export function AttendanceMonitoring() {
   });
 
   // Filter logs list
-  const filteredLogs = allLogs.filter(log => 
-    log.studentName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    log.date.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.locationStatus.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredLogs = allLogs.filter(log => {
+    const normalizedSearch = searchTerm.toLowerCase();
+    const matchesSearch = log.studentName.toLowerCase().includes(normalizedSearch) || 
+                          log.studentNumber.includes(searchTerm) ||
+                          log.date.toLowerCase().includes(normalizedSearch) ||
+                          log.locationStatus.toLowerCase().includes(normalizedSearch) ||
+                          log.companyName.toLowerCase().includes(normalizedSearch);
+    const matchesSection = sectionFilter === 'all' || getComparableSection(log.section) === sectionFilter;
+    const matchesProgram = programFilter === 'all' || log.program.includes(programFilter);
+    const matchesDate = !dateFilter || log.date === dateFilter;
+    const matchesWeek = !weekFilter || isDateWithinWeek(log.date, weekFilter);
+    return matchesSearch && matchesSection && matchesProgram && matchesDate && matchesWeek;
+  });
 
   // Filter DTRs list
-  const filteredDTRs = allDTRs.filter(dtr => 
-    dtr.studentName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    dtr.month.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    dtr.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredDTRs = allDTRs.filter(dtr => {
+    const normalizedSearch = searchTerm.toLowerCase();
+    const matchesSearch = dtr.studentName.toLowerCase().includes(normalizedSearch) || 
+                          dtr.studentNumber.includes(searchTerm) ||
+                          dtr.month.toLowerCase().includes(normalizedSearch) ||
+                          dtr.status.toLowerCase().includes(normalizedSearch) ||
+                          dtr.companyName.toLowerCase().includes(normalizedSearch);
+    const matchesSection = sectionFilter === 'all' || getComparableSection(dtr.section) === sectionFilter;
+    const matchesProgram = programFilter === 'all' || dtr.program.includes(programFilter);
+    const matchesMonth = !dtrMonthFilter || dtr.startDate.startsWith(dtrMonthFilter);
+    return matchesSearch && matchesSection && matchesProgram && matchesMonth;
+  });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -135,6 +196,31 @@ export function AttendanceMonitoring() {
     setRemarks('');
   };
 
+  const handlePrintDtr = (dtrId: string) => {
+    document.getElementById('dtr-print-frame')?.remove();
+
+    const frame = document.createElement('iframe');
+    frame.id = 'dtr-print-frame';
+    frame.src = `/print-dtr/${dtrId}?preview=1`;
+    frame.style.position = 'fixed';
+    frame.style.right = '0';
+    frame.style.bottom = '0';
+    frame.style.width = '1px';
+    frame.style.height = '1px';
+    frame.style.border = '0';
+    frame.style.opacity = '0';
+    frame.setAttribute('aria-hidden', 'true');
+    frame.onload = () => {
+      window.setTimeout(() => {
+        frame.contentWindow?.focus();
+        frame.contentWindow?.print();
+      }, 300);
+    };
+    document.body.appendChild(frame);
+
+    window.setTimeout(() => frame.remove(), 60000);
+  };
+
   return (
     <div className="space-y-6 font-sans">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
@@ -148,30 +234,116 @@ export function AttendanceMonitoring() {
           <Button
             onClick={() => setActiveTab('logs')}
             variant={activeTab === 'logs' ? 'secondary' : 'ghost'}
-            className={`h-8 text-xs font-bold ${activeTab === 'logs' ? 'bg-white shadow-sm' : 'text-slate-600'}`}
+            className={`h-8 text-xs font-bold cursor-pointer ${activeTab === 'logs' ? 'bg-white shadow-sm hover:bg-white' : 'text-slate-600 hover:bg-white/70 hover:text-slate-900'}`}
           >
             Clock-In Logs
           </Button>
           <Button
             onClick={() => setActiveTab('dtrs')}
             variant={activeTab === 'dtrs' ? 'secondary' : 'ghost'}
-            className={`h-8 text-xs font-bold ${activeTab === 'dtrs' ? 'bg-white shadow-sm' : 'text-slate-600'}`}
+            className={`h-8 text-xs font-bold cursor-pointer ${activeTab === 'dtrs' ? 'bg-white shadow-sm hover:bg-white' : 'text-slate-600 hover:bg-white/70 hover:text-slate-900'}`}
           >
             DTR Review Board
           </Button>
         </div>
       </div>
 
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-        <Input
-          type="search"
-          placeholder={activeTab === 'logs' ? "Search student or date..." : "Search student, month, status..."}
-          className="pl-10 text-xs bg-white border-slate-200 focus-visible:ring-[#800000] w-full"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+      {/* Filter panel */}
+      <Card className="shadow-sm border-slate-200">
+        <CardContent className="p-4 flex flex-col md:flex-row gap-4 items-end">
+          <div className="flex-1 space-y-1.5 w-full">
+            <Label htmlFor="attendance-search" className="text-xs">Search student</Label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                id="attendance-search"
+                type="search"
+                placeholder={activeTab === 'logs' ? "Search student, ID, company, or date..." : "Search student, ID, company, month, or status..."}
+                className="pl-10 text-xs bg-slate-50 border-slate-200"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="w-full md:w-48 space-y-1.5">
+            <Label htmlFor="attendance-program" className="text-xs">Program Course</Label>
+            <select
+              id="attendance-program"
+              value={programFilter}
+              onChange={(e) => setProgramFilter(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-250 rounded-lg p-2 text-xs focus:ring-[#800000] focus:border-[#800000]"
+            >
+              <option value="all">All Programs</option>
+              <option value="BSIT">BSIT</option>
+              <option value="BSCpE">BSCpE</option>
+              <option value="BSHM">BSHM</option>
+              <option value="BSOA">BSOA</option>
+            </select>
+          </div>
+
+          <div className="w-full md:w-48 space-y-1.5">
+            <Label htmlFor="attendance-section" className="text-xs">Class Section</Label>
+            <select
+              id="attendance-section"
+              value={sectionFilter}
+              onChange={(e) => setSectionFilter(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-250 rounded-lg p-2 text-xs focus:ring-[#800000] focus:border-[#800000]"
+            >
+              <option value="all">All Sections</option>
+              <option value="3-1">3-1</option>
+              <option value="3-2">3-2</option>
+              <option value="4-1">4-1</option>
+              <option value="4-2">4-2</option>
+            </select>
+          </div>
+
+          {activeTab === 'logs' && (
+            <>
+              <div className="w-full md:w-40 space-y-1.5">
+                <Label htmlFor="attendance-date" className="text-xs">Log Date</Label>
+                <Input
+                  id="attendance-date"
+                  type="date"
+                  value={dateFilter}
+                  onChange={(e) => {
+                    setDateFilter(e.target.value);
+                    if (e.target.value) setWeekFilter('');
+                  }}
+                  className="text-xs bg-slate-50 border-slate-200"
+                />
+              </div>
+
+              <div className="w-full md:w-40 space-y-1.5">
+                <Label htmlFor="attendance-week" className="text-xs">Log Week</Label>
+                <Input
+                  id="attendance-week"
+                  type="week"
+                  value={weekFilter}
+                  onChange={(e) => {
+                    setWeekFilter(e.target.value);
+                    if (e.target.value) setDateFilter('');
+                  }}
+                  className="text-xs bg-slate-50 border-slate-200"
+                />
+              </div>
+            </>
+          )}
+
+          {activeTab === 'dtrs' && (
+            <div className="w-full md:w-40 space-y-1.5">
+              <Label htmlFor="dtr-month" className="text-xs">DTR Month</Label>
+              <Input
+                id="dtr-month"
+                type="month"
+                value={dtrMonthFilter}
+                onChange={(e) => setDtrMonthFilter(e.target.value)}
+                className="text-xs bg-slate-50 border-slate-200"
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {activeTab === 'logs' ? (
         /* Tab 1: Real-time logs */
@@ -317,8 +489,16 @@ export function AttendanceMonitoring() {
 
           {selectedDtr && (
             <div className="space-y-4">
-              {/* Printable preview render mimic */}
-              <div className="bg-slate-50 rounded-lg p-5 border border-slate-200 font-mono text-[10px] text-slate-800 max-h-[350px] overflow-y-auto">
+              {/* Actual printable DTR preview */}
+              <div className="bg-slate-100 rounded-lg border border-slate-200 overflow-hidden h-[420px]">
+                <iframe
+                  title={`Printable DTR preview for ${selectedDtr.studentName}`}
+                  src={`/print-dtr/${selectedDtr.id}?preview=1`}
+                  className="w-full h-full bg-white"
+                />
+              </div>
+
+              <div className="hidden">
                 <div className="text-center border-b pb-2 mb-3">
                   <p className="font-bold text-[11px] uppercase tracking-wide">POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</p>
                   <p className="font-extrabold text-[#800000] text-xs pt-1.5 underline">DAILY TIME RECORD PREVIEW</p>
@@ -375,9 +555,9 @@ export function AttendanceMonitoring() {
 
                 <div className="flex flex-wrap justify-between items-center gap-3 pt-3 border-t">
                   <Button
-                    onClick={() => window.open(`/print-dtr/${selectedDtr.id}`, '_blank')}
+                    onClick={() => handlePrintDtr(selectedDtr.id)}
                     variant="outline"
-                    className="text-xs border-slate-300 font-semibold flex items-center gap-1 px-3"
+                    className="text-xs border-slate-300 font-semibold flex items-center gap-1 px-3 cursor-pointer hover:bg-slate-50 hover:text-slate-900"
                   >
                     <Printer className="h-4 w-4" /> View Printable DTR PDF
                   </Button>
@@ -386,7 +566,7 @@ export function AttendanceMonitoring() {
                     <Button
                       onClick={() => handleReviewAction('Needs Revision')}
                       variant="outline"
-                      className="text-xs border-amber-300 text-amber-700 hover:bg-amber-50 font-semibold flex items-center gap-1.5 px-4 cursor-pointer"
+                      className="text-xs border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-400 font-semibold flex items-center gap-1.5 px-4 cursor-pointer"
                     >
                       <X className="h-4 w-4" /> Request Revision
                     </Button>

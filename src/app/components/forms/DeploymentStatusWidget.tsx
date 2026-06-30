@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { ShieldCheck } from 'lucide-react';
-import { deploymentRequirementStatus, type DeploymentStatus } from '../../data/mockData';
+import { deploymentRequirementStatus, type DeploymentStatus } from '../../data/referenceData';
 
 const statusClasses: Record<DeploymentStatus, string> = {
   'Not Started': 'bg-slate-100 text-slate-700 hover:bg-slate-100',

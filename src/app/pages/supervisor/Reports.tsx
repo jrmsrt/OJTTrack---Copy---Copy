@@ -7,7 +7,7 @@ import { Textarea } from '../../components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../../components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { Search, CheckCircle, XCircle, Clock, MessageSquare } from 'lucide-react';
-import { progressReports } from '../../data/mockData';
+import { progressReports } from '../../data/referenceData';
 
 const allReports = [
   ...progressReports.map(r => ({ ...r, studentName: 'Sarah Johnson', studentId: 'STU-2024-001' })),

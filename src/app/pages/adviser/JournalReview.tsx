@@ -22,7 +22,8 @@ import {
   AlertTriangle,
   CheckCircle2,
   Clock,
-  Download
+  Download,
+  FileText
 } from 'lucide-react';
 import {
   Dialog,
@@ -37,9 +38,24 @@ export function JournalReview() {
   const { students, reviewWeeklyJournal } = useOJT();
   
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedJournal, setSelectedJournal] = useState<{ studentId: string; studentName: string; studentNumber: string; section: string; program: string; companyName: string; journalId: string; weekNumber: number; reflection: string; problems: string; totalHours: number; status: string; remarks?: string } | null>(null);
+  const [sectionFilter, setSectionFilter] = useState('all');
+  const [programFilter, setProgramFilter] = useState('all');
+  const [weekNumberFilter, setWeekNumberFilter] = useState('all');
+  const [selectedJournal, setSelectedJournal] = useState<{ studentId: string; studentName: string; studentNumber: string; section: string; program: string; companyName: string; journalId: string; weekNumber: number; startDate: string; endDate: string; tasks: any[]; reflection: string; problems: string; totalHours: number; status: string; remarks?: string } | null>(null);
   const [remarks, setRemarks] = useState('');
+  const [previewZoom, setPreviewZoom] = useState(0.78);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+
+  const getComparableSection = (section: string) => {
+    const normalizedSection = section.trim().toUpperCase();
+    const legacyMatch = normalizedSection.match(/\b([34])([AB])$/);
+
+    if (legacyMatch) {
+      return `${legacyMatch[1]}-${legacyMatch[2] === 'A' ? '1' : '2'}`;
+    }
+
+    return section.trim();
+  };
 
   // Flatten weekly journals
   const allJournals = students.flatMap(s => 
@@ -48,6 +64,7 @@ export function JournalReview() {
       weekNumber: j.weekNumber,
       startDate: j.startDate,
       endDate: j.endDate,
+      tasks: j.tasks,
       reflection: j.reflection,
       problems: j.problems,
       totalHours: j.totalHours,
@@ -63,10 +80,21 @@ export function JournalReview() {
   ).sort((a, b) => b.weekNumber - a.weekNumber);
 
   // Filter journals
-  const filteredJournals = allJournals.filter(j => 
-    j.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    j.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJournals = allJournals.filter(j => {
+    const normalizedSearch = searchTerm.toLowerCase();
+    const matchesSearch = j.studentName.toLowerCase().includes(normalizedSearch) ||
+                          j.studentNumber.includes(searchTerm) ||
+                          j.companyName.toLowerCase().includes(normalizedSearch) ||
+                          j.status.toLowerCase().includes(normalizedSearch) ||
+                          `week ${j.weekNumber}`.includes(normalizedSearch) ||
+                          String(j.weekNumber).includes(searchTerm);
+    const matchesSection = sectionFilter === 'all' || getComparableSection(j.section) === sectionFilter;
+    const matchesProgram = programFilter === 'all' || j.program.includes(programFilter);
+    const matchesWeek = weekNumberFilter === 'all' || String(j.weekNumber) === weekNumberFilter;
+    return matchesSearch && matchesSection && matchesProgram && matchesWeek;
+  });
+
+  const weekNumberOptions = Array.from(new Set(allJournals.map(j => j.weekNumber))).sort((a, b) => a - b);
 
   const handleReviewAction = (status: 'Approved' | 'Needs Revision') => {
     if (!selectedJournal) return;
@@ -90,24 +118,183 @@ export function JournalReview() {
     }
   };
 
+  const handleOpenJournal = (journal: typeof selectedJournal) => {
+    if (!journal) return;
+    sessionStorage.setItem(`weeklyJournal:${journal.journalId}`, JSON.stringify({
+      studentId: journal.studentId,
+      journal: {
+        id: journal.journalId,
+        weekNumber: journal.weekNumber,
+        startDate: journal.startDate,
+        endDate: journal.endDate,
+        tasks: journal.tasks,
+        reflection: journal.reflection,
+        problems: journal.problems,
+        totalHours: journal.totalHours,
+        status: journal.status,
+        remarks: journal.remarks
+      },
+      reflection: journal.reflection,
+      problems: journal.problems,
+      assignedDepartment: 'OJT Department'
+    }));
+    setSelectedJournal(journal);
+    setRemarks('');
+    setPreviewZoom(0.78);
+    setReviewDialogOpen(true);
+  };
+
+  const escapeHtml = (value: string) =>
+    value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+
+  const handleDownloadJournal = (journal: typeof selectedJournal) => {
+    if (!journal) return;
+
+    const taskRows = journal.tasks.map((task: any) => `
+      <tr>
+        <td>${escapeHtml(task.date || '')}</td>
+        <td>${escapeHtml(task.title || '')}</td>
+        <td>${escapeHtml(task.description || '')}</td>
+        <td>${escapeHtml(task.output || '')}</td>
+      </tr>
+    `).join('');
+
+    const html = `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Weekly Journal Week ${journal.weekNumber}</title>
+    <style>
+      body { font-family: Arial, Helvetica, sans-serif; color: #111827; margin: 32px; }
+      h1 { font-size: 18px; margin: 0 0 4px; text-align: center; }
+      h2 { font-size: 14px; margin: 0 0 24px; text-align: center; color: #800000; }
+      .meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; font-size: 12px; margin-bottom: 20px; }
+      .label { color: #64748b; font-weight: 700; }
+      table { width: 100%; border-collapse: collapse; margin: 16px 0 22px; font-size: 11px; }
+      th, td { border: 1px solid #cbd5e1; padding: 8px; vertical-align: top; text-align: left; }
+      th { background: #f8fafc; color: #475569; text-transform: uppercase; font-size: 10px; }
+      section { margin-top: 18px; }
+      section h3 { font-size: 13px; margin-bottom: 8px; color: #800000; }
+      p { font-size: 12px; line-height: 1.6; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</h1>
+    <h2>Weekly Journal Report - Week ${journal.weekNumber}</h2>
+    <div class="meta">
+      <div><span class="label">Student:</span> ${escapeHtml(journal.studentName)}</div>
+      <div><span class="label">Student No.:</span> ${escapeHtml(journal.studentNumber)}</div>
+      <div><span class="label">Program/Section:</span> ${escapeHtml(journal.program)} / ${escapeHtml(journal.section)}</div>
+      <div><span class="label">Company:</span> ${escapeHtml(journal.companyName)}</div>
+      <div><span class="label">Period:</span> ${escapeHtml(journal.startDate)} to ${escapeHtml(journal.endDate)}</div>
+      <div><span class="label">Total Hours:</span> ${journal.totalHours} hrs</div>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Task</th><th>Description</th><th>Output</th></tr>
+      </thead>
+      <tbody>${taskRows || '<tr><td colspan="4">No task rows recorded.</td></tr>'}</tbody>
+    </table>
+    <section>
+      <h3>Relevant Skills and Competencies</h3>
+      <p>${escapeHtml(journal.reflection)}</p>
+    </section>
+    <section>
+      <h3>Problems Encountered</h3>
+      <p>${escapeHtml(journal.problems)}</p>
+    </section>
+  </body>
+</html>`;
+
+    const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Weekly_Journal_Week_${journal.weekNumber}_${journal.studentName.replace(/\s+/g, '_')}.html`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6 font-sans">
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+      <div>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 font-sans">Weekly Journal Review</h1>
           <p className="text-slate-500 text-sm mt-0.5">Audit and endorse weekly OJT accomplishment journals compiled by interns.</p>
         </div>
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            type="search"
-            placeholder="Search by student name..."
-            className="pl-10 text-xs bg-slate-50 border-slate-200 focus-visible:ring-[#800000]"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
       </div>
+
+      <Card className="shadow-sm border-slate-200">
+        <CardContent className="p-4 flex flex-col md:flex-row gap-4 items-end">
+          <div className="flex-1 space-y-1.5 w-full">
+            <Label htmlFor="journal-search" className="text-xs">Search journal</Label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                id="journal-search"
+                type="search"
+                placeholder="Search student, ID, company, week, or status..."
+                className="pl-10 text-xs bg-slate-50 border-slate-200"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="w-full md:w-48 space-y-1.5">
+            <Label htmlFor="journal-program" className="text-xs">Program Course</Label>
+            <select
+              id="journal-program"
+              value={programFilter}
+              onChange={(e) => setProgramFilter(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-250 rounded-lg p-2 text-xs focus:ring-[#800000] focus:border-[#800000]"
+            >
+              <option value="all">All Programs</option>
+              <option value="BSIT">BSIT</option>
+              <option value="BSCpE">BSCpE</option>
+              <option value="BSHM">BSHM</option>
+              <option value="BSOA">BSOA</option>
+            </select>
+          </div>
+
+          <div className="w-full md:w-48 space-y-1.5">
+            <Label htmlFor="journal-section" className="text-xs">Class Section</Label>
+            <select
+              id="journal-section"
+              value={sectionFilter}
+              onChange={(e) => setSectionFilter(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-250 rounded-lg p-2 text-xs focus:ring-[#800000] focus:border-[#800000]"
+            >
+              <option value="all">All Sections</option>
+              <option value="3-1">3-1</option>
+              <option value="3-2">3-2</option>
+              <option value="4-1">4-1</option>
+              <option value="4-2">4-2</option>
+            </select>
+          </div>
+
+          <div className="w-full md:w-40 space-y-1.5">
+            <Label htmlFor="journal-week" className="text-xs">Week Number</Label>
+            <select
+              id="journal-week"
+              value={weekNumberFilter}
+              onChange={(e) => setWeekNumberFilter(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-250 rounded-lg p-2 text-xs focus:ring-[#800000] focus:border-[#800000]"
+            >
+              <option value="all">All Weeks</option>
+              {weekNumberOptions.map((weekNumber) => (
+                <option key={weekNumber} value={weekNumber}>Week {weekNumber}</option>
+              ))}
+            </select>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="shadow-sm border-slate-200">
         <CardHeader>
@@ -126,7 +313,7 @@ export function JournalReview() {
                   <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Student Name</TableHead>
                   <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Week Number</TableHead>
                   <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Total Hours</TableHead>
-                  <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Reflection Snippet</TableHead>
+                  <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Weekly Journal File</TableHead>
                   <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase">Status</TableHead>
                   <TableHead className="py-3 px-4 font-semibold text-xs text-slate-500 uppercase text-center w-28">Action</TableHead>
                 </TableRow>
@@ -144,8 +331,16 @@ export function JournalReview() {
                     <TableCell className="py-3.5 px-4 text-xs font-bold text-slate-800">
                       {j.totalHours} hrs
                     </TableCell>
-                    <TableCell className="py-3.5 px-4 max-w-xs text-xs text-slate-500 font-light truncate">
-                      {j.reflection}
+                    <TableCell className="py-3.5 px-4 max-w-xs text-xs">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOpenJournal(j)}
+                        className="h-7 text-[10px] font-semibold text-[#800000] border-red-200 hover:bg-red-50 hover:text-[#6b0000] hover:border-red-300 cursor-pointer"
+                      >
+                        <FileText className="h-3.5 w-3.5 mr-1" />
+                        Weekly_Journal_Week_{j.weekNumber}.pdf
+                      </Button>
                     </TableCell>
                     <TableCell className="py-3.5 px-4 font-semibold text-xs">
                       {getStatusBadge(j.status)}
@@ -153,11 +348,7 @@ export function JournalReview() {
                     <TableCell className="py-3.5 px-4 text-center">
                       <Button
                         size="sm"
-                        onClick={() => {
-                          setSelectedJournal(j);
-                          setRemarks(j.remarks || '');
-                          setReviewDialogOpen(true);
-                        }}
+                        onClick={() => handleOpenJournal(j)}
                         className="bg-[#800000] hover:bg-[#6b0000] text-white text-[10px] h-7 font-bold flex items-center gap-1.5 cursor-pointer"
                       >
                         Audit Journal
@@ -174,7 +365,7 @@ export function JournalReview() {
       {/* Review Dialog Document Preview style */}
       {selectedJournal && (
         <Dialog open={reviewDialogOpen} onOpenChange={() => setReviewDialogOpen(false)}>
-          <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto font-sans">
+          <DialogContent className="sm:max-w-3xl h-[88vh] overflow-hidden font-sans flex flex-col">
             <DialogHeader>
               <DialogTitle>Audit Weekly Report Journal</DialogTitle>
               <DialogDescription>
@@ -182,30 +373,38 @@ export function JournalReview() {
               </DialogDescription>
             </DialogHeader>
 
-            <div className="py-4 space-y-5 text-xs">
-              {/* Serif document preview sheet */}
-              <div className="bg-white border border-slate-350 shadow-md p-8 text-slate-800 text-[10.5px] font-serif leading-relaxed max-w-2xl mx-auto space-y-5">
-                <div className="text-center border-b pb-3 font-sans font-bold">
-                  <p className="text-[10px] uppercase text-[#800000]">Polytechnic University of the Philippines</p>
-                  <h4 className="text-xs uppercase mt-1">Accomplishment Weekly Journal (Week {selectedJournal.weekNumber})</h4>
-                </div>
+            <div className="py-4 space-y-5 text-xs flex-1 min-h-0 overflow-hidden pr-1">
+              <div className="flex items-center justify-end gap-2">
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  onClick={() => setPreviewZoom((zoom) => Math.max(0.55, Number((zoom - 0.1).toFixed(2))))}
+                  className="h-8 w-8 border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer text-lg leading-none"
+                  aria-label="Zoom out"
+                >
+                  -
+                </Button>
+                <span className="w-12 text-center text-[11px] font-semibold text-slate-500">{Math.round(previewZoom * 100)}%</span>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  onClick={() => setPreviewZoom((zoom) => Math.min(1.1, Number((zoom + 0.1).toFixed(2))))}
+                  className="h-8 w-8 border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer text-lg leading-none"
+                  aria-label="Zoom in"
+                >
+                  +
+                </Button>
+              </div>
 
-                <div className="grid grid-cols-2 gap-y-1.5 font-sans font-medium text-[9px] text-slate-500 pb-2 border-b border-slate-100">
-                  <p>Student Name: <span className="text-slate-800 font-serif font-bold text-[10px]">{selectedJournal.studentName}</span></p>
-                  <p>Company: <span className="text-slate-800 font-serif font-bold text-[10px]">{selectedJournal.companyName}</span></p>
-                  <p>Program/Section: <span className="text-slate-800 font-serif font-bold text-[10px]">{selectedJournal.section}</span></p>
-                  <p>Accumulated Duration: <span className="text-[#800000] font-sans font-bold text-[10px]">{selectedJournal.totalHours} hrs</span></p>
-                </div>
-
-                <div>
-                  <h5 className="font-sans font-bold text-xs text-slate-900 border-l-2 border-[#800000] pl-1.5 mb-1.5">1. Reflective Insights</h5>
-                  <p className="text-justify indent-6 leading-loose">{selectedJournal.reflection}</p>
-                </div>
-
-                <div>
-                  <h5 className="font-sans font-bold text-xs text-slate-900 border-l-2 border-[#800000] pl-1.5 mb-1.5">2. Roadblocks & Incidents</h5>
-                  <p className="text-justify bg-red-50/30 p-2 rounded border border-red-100 text-red-800 font-sans">{selectedJournal.problems}</p>
-                </div>
+              {/* Actual weekly journal file preview */}
+              <div className="bg-slate-100 rounded-lg border border-slate-200 overflow-auto h-[420px] max-w-full">
+                <iframe
+                  title={`Weekly Journal Week ${selectedJournal.weekNumber} preview`}
+                  src={`/print-weekly-journal/${selectedJournal.journalId}?preview=1&zoom=${previewZoom}`}
+                  className="w-full h-full bg-white"
+                />
               </div>
 
               {/* Remarks Field */}
@@ -220,11 +419,18 @@ export function JournalReview() {
               </div>
             </div>
 
-            <DialogFooter className="gap-2 sm:gap-0">
+            <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => handleDownloadJournal(selectedJournal)}
+                className="text-xs border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
+              >
+                <Download className="h-3.5 w-3.5 mr-1" /> Download File
+              </Button>
               <Button
                 variant="outline"
                 onClick={() => handleReviewAction('Needs Revision')}
-                className="text-xs border-amber-300 text-amber-800 hover:bg-amber-50 cursor-pointer"
+                className="text-xs border-amber-300 text-amber-800 hover:bg-amber-50 hover:text-amber-900 hover:border-amber-400 cursor-pointer"
               >
                 <X className="h-3.5 w-3.5 mr-1" /> Return for Revision
               </Button>

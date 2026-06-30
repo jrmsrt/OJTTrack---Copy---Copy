@@ -38,7 +38,7 @@ import {
   formsTemplates,
   requirementReviewHistory,
   type RequirementSubmissionStatus,
-} from '../../data/mockData';
+} from '../../data/referenceData';
 import {
   CheckCircle2,
   Edit,

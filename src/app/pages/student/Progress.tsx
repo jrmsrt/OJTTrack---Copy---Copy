@@ -7,7 +7,7 @@ import { Label } from '../../components/ui/label';
 import { Textarea } from '../../components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
 import { FileText, Plus, CheckCircle, Clock, MessageSquare, Paperclip } from 'lucide-react';
-import { progressReports } from '../../data/mockData';
+import { progressReports } from '../../data/referenceData';
 
 export function Progress() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);

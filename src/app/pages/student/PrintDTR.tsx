@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
 import { DTRRecord, useOJT } from '../../context/OJTContext';
 
 export function PrintDTR() {
   const { dtrId } = useParams<{ dtrId: string }>();
+  const [searchParams] = useSearchParams();
   const { students, companies } = useOJT();
+  const isPreview = searchParams.get('preview') === '1';
 
   const generatedExport = (() => {
     if (!dtrId) return null;
@@ -25,10 +27,10 @@ export function PrintDTR() {
   const company = student ? companies.find(c => c.id === student.companyId) : null;
 
   useEffect(() => {
-    if (!dtr) return;
+    if (!dtr || isPreview) return;
     const timer = setTimeout(() => window.print(), 800);
     return () => clearTimeout(timer);
-  }, [dtr]);
+  }, [dtr, isPreview]);
 
   if (!dtr || !student) {
     return (
@@ -570,10 +572,12 @@ export function PrintDTR() {
         }
       ` }} />
 
-      <div className="no-print-btn">
-        <span>Print mode ready. This DTR follows the three-copy official template layout.</span>
-        <button className="print-button" onClick={() => window.print()}>Print / Save PDF</button>
-      </div>
+      {!isPreview && (
+        <div className="no-print-btn">
+          <span>Print mode ready. This DTR follows the three-copy official template layout.</span>
+          <button className="print-button" onClick={() => window.print()}>Print / Save PDF</button>
+        </div>
+      )}
 
       <main className="dtr-page">
         <DTRSlip copyIndex={0} />

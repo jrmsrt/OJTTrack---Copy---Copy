@@ -1,6 +1,6 @@
 import React from 'react';
 import { Badge } from '../ui/badge';
-import { type RequirementSubmissionStatus } from '../../data/mockData';
+import { type RequirementSubmissionStatus } from '../../data/referenceData';
 
 const requirementStatusClasses: Record<RequirementSubmissionStatus, string> = {
   'Not Submitted': 'bg-slate-100 text-slate-700 hover:bg-slate-100',
